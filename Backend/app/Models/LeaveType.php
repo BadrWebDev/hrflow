@@ -10,4 +10,10 @@ class LeaveType extends Model
     use HasFactory;
 
     protected $fillable = ['name', 'default_quota', 'max_consecutive_days'];
+
+    // Relationships
+    public function leaves()
+    {
+        return $this->hasMany(Leave::class);
+    }
 }

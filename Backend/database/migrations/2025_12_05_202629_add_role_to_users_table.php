@@ -13,13 +13,16 @@ return new class extends Migration
     {
         Schema::table('users', function (Blueprint $table) {
             $table->string('role')->default('employee'); // default role is employee
+            $table->unsignedBigInteger('department_id')->nullable()->after('role');
+            $table->foreign('department_id')->references('id')->on('departments')->onDelete('set null');
         });
     }
 
     public function down(): void
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->dropColumn('role');
+            $table->dropForeign(['department_id']);
+            $table->dropColumn(['role', 'department_id']);
         });
     }
 

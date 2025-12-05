@@ -21,9 +21,9 @@ class DatabaseSeeder extends Seeder
         // User::factory(10)->create();
 
         // Departments
-        Department::create(['name'=>'HR']);
-        Department::create(['name'=>'IT']);
-        Department::create(['name'=>'Finance']);
+        $hr = Department::create(['name'=>'HR']);
+        $it = Department::create(['name'=>'IT']);
+        $finance = Department::create(['name'=>'Finance']);
 
         // Leave Types
         LeaveType::create(['name'=>'Annual', 'default_quota'=>20, 'max_consecutive_days'=>10]);
@@ -31,11 +31,32 @@ class DatabaseSeeder extends Seeder
         LeaveType::create(['name'=>'Unpaid', 'default_quota'=>0, 'max_consecutive_days'=>30]);
 
         // Admin user
-        User::create([
+        $admin = User::create([
             'name'=>'Admin',
             'email'=>'admin@hrflow.test',
             'password'=>Hash::make('Admin1234'),
             'role'=>'admin',
+            'department_id'=>$hr->id,
         ]);
+
+        // Sample employees
+        User::create([
+            'name'=>'John Doe',
+            'email'=>'john@hrflow.test',
+            'password'=>Hash::make('password'),
+            'role'=>'employee',
+            'department_id'=>$it->id,
+        ]);
+
+        User::create([
+            'name'=>'Jane Smith',
+            'email'=>'jane@hrflow.test',
+            'password'=>Hash::make('password'),
+            'role'=>'employee',
+            'department_id'=>$finance->id,
+        ]);
+
+        // Set department managers
+        $hr->update(['manager_id'=>$admin->id]);
     }
 }
