@@ -13,8 +13,22 @@ return new class extends Migration
     {
         Schema::create('leaves', function (Blueprint $table) {
             $table->id();
+            $table->unsignedBigInteger('user_id');
+            $table->unsignedBigInteger('leave_type_id');
+            $table->date('start_date');
+            $table->date('end_date');
+            $table->decimal('days', 5, 2);
+            $table->text('reason')->nullable();
+            $table->string('attachment')->nullable();
+            $table->enum('status', ['pending','approved','rejected','cancelled'])->default('pending');
+            $table->unsignedBigInteger('approver_id')->nullable();
+            $table->timestamp('approved_at')->nullable();
             $table->timestamps();
+
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
+            $table->foreign('leave_type_id')->references('id')->on('leave_types');
         });
+
     }
 
     /**

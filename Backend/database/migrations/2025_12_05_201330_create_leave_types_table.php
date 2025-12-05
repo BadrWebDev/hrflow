@@ -13,8 +13,12 @@ return new class extends Migration
     {
         Schema::create('leave_types', function (Blueprint $table) {
             $table->id();
+            $table->string('name');
+            $table->integer('default_quota'); // days per year
+            $table->integer('max_consecutive_days')->nullable();
             $table->timestamps();
         });
+
     }
 
     /**
