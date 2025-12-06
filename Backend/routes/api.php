@@ -4,6 +4,7 @@ use App\Http\Controllers\Auth\ApiAuthController;
 use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\LeaveTypeController;
+use App\Http\Controllers\NotificationController;
 
 // Public authentication routes
 Route::post('/register', [ApiAuthController::class, 'register']);
@@ -32,6 +33,12 @@ Route::middleware('auth:sanctum')->group(function () {
     // Leave Type routes (read for all)
     Route::get('/leave-types', [LeaveTypeController::class, 'index']);
     Route::get('/leave-types/{id}', [LeaveTypeController::class, 'show']);
+
+    // Notification routes
+    Route::get('/notifications', [NotificationController::class, 'index']);
+    Route::get('/notifications/unread-count', [NotificationController::class, 'unreadCount']);
+    Route::post('/notifications/{id}/read', [NotificationController::class, 'markAsRead']);
+    Route::post('/notifications/mark-all-read', [NotificationController::class, 'markAllAsRead']);
 
     // Admin-only routes
     Route::middleware('admin')->group(function () {

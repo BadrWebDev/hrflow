@@ -7,6 +7,7 @@ use App\Models\Leave;
 use App\Models\LeaveType;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
+use App\Services\NotificationService;
 
 class LeaveController extends Controller
 {
@@ -54,6 +55,13 @@ class LeaveController extends Controller
             'status' => 'pending',
         ]);
 
+        // Load relationships for notification
+        $leave->load(['user', 'leaveType']);
+
+        // Send notification to admins
+        $notificationService = new NotificationService();
+        $notificationService->notifyLeaveSubmitted($leave);
+
         return response()->json($leave, 201);
     }
 
@@ -87,6 +95,17 @@ class LeaveController extends Controller
         $leave->approved_at = now();
         $leave->save();
 
+        // Load relationships for notification
+        $leave->load(['user', 'leaveType', 'approver']);
+
+        // Send notification based on status
+        $notificationService = new NotificationService();
+        if ($request->status === 'approved') {
+            $notificationService->notifyLeaveApproved($leave);
+        } elseif ($request->status === 'rejected') {
+            $notificationService->notifyLeaveRejected($leave);
+        }
+
         return response()->json($leave);
     }
 
@@ -100,6 +119,15 @@ class LeaveController extends Controller
 
         if ($user->role !== 'admin' && $leave->user_id !== $user->id) {
             return response()->json(['error'=>'Unauthorized'], 403);
+        }
+
+        // Load relationships before deleting
+        $leave->load(['user', 'leaveType']);
+
+        // Send notification if employee cancels
+        if ($user->id === $leave->user_id) {
+            $notificationService = new NotificationService();
+            $notificationService->notifyLeaveCancelled($leave);
         }
 
         $leave->delete();

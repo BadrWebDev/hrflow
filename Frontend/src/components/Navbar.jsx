@@ -1,5 +1,6 @@
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
+import NotificationDropdown from './NotificationDropdown';
 import './Navbar.css';
 
 const Navbar = () => {
@@ -17,6 +18,7 @@ const Navbar = () => {
         <h1>HRFlow</h1>
       </div>
       <div className="navbar-menu">
+        <NotificationDropdown />
         <span className="user-info">
           {user?.name} {isAdmin && <span className="admin-badge">Admin</span>}
         </span>

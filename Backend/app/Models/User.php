@@ -64,4 +64,9 @@ class User extends Authenticatable
     {
         return $this->hasMany(Leave::class, 'approver_id');
     }
+
+    public function notifications()
+    {
+        return $this->hasMany(Notification::class);
+    }
 }
