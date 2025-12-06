@@ -29,7 +29,8 @@
 ### 👤 For Employees
 - 📝 Submit leave requests with date range selection
 - 📊 View personal leave history and statistics
-- 🔔 Real-time status updates (Pending/Approved/Rejected)
+- 🔔 Real-time notifications for request status updates
+- 📧 Email notifications for approved/rejected requests
 - ❌ Cancel pending requests
 - 📈 Dashboard with visual statistics
 
@@ -38,6 +39,8 @@
 - 👥 Manage employees (view, create, delete)
 - 🏢 Manage departments and leave types
 - 📊 View company-wide leave statistics
+- 🔔 Instant notifications when employees submit requests
+- 📧 Email alerts for all leave activities
 - 🔍 Filter and search functionality
 
 ### 🔐 Security
@@ -56,6 +59,8 @@
 - **Database:** MySQL
 - **Authentication:** Laravel Sanctum (Token-based)
 - **API:** RESTful architecture
+- **Email:** Laravel Mail with SMTP
+- **Notifications:** In-app + Email alerts
 
 ### Frontend
 - **Library:** React 19
@@ -206,6 +211,14 @@ PUT    /api/leaves/{id}       # Update leave status (admin only)
 DELETE /api/leaves/{id}       # Cancel leave request
 ```
 
+### Notifications (Authenticated)
+```http
+GET    /api/notifications              # Get all notifications
+GET    /api/notifications/unread-count # Get unread count
+POST   /api/notifications/{id}/read    # Mark notification as read
+POST   /api/notifications/mark-all-read # Mark all as read
+```
+
 ### Admin Only Routes
 ```http
 GET    /api/users             # List all employees
@@ -257,12 +270,18 @@ Route::middleware(['auth:sanctum', 'admin'])->group(function () {
 });
 ```
 
-### 3. Real-Time Updates
+### 3. Notification System
+- **In-App Notifications:** Real-time bell icon with unread count
+- **Email Notifications:** Beautiful HTML emails sent automatically
+- **Triggers:** Leave submitted, approved, rejected, cancelled
+- **Smart Routing:** Admins notified on submissions, employees on status changes
+
+### 4. Real-Time Updates
 - Optimistic UI updates
 - Instant feedback on actions
 - Auto-refresh after mutations
 
-### 4. Responsive Design
+### 5. Responsive Design
 - Mobile-friendly interface
 - Adaptive grid layouts
 - Touch-optimized controls
