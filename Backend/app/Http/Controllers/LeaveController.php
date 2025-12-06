@@ -71,12 +71,8 @@ class LeaveController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $user = Auth::user();
-        if ($user->role !== 'admin') {
-            return response()->json(['error'=>'Unauthorized'], 403);
-        }
-
         $leave = Leave::findOrFail($id);
+        $user = Auth::user();
 
         $validator = Validator::make($request->all(), [
             'status' => 'required|in:approved,rejected,pending',

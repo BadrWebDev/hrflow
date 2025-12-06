@@ -23,11 +23,6 @@ class LeaveTypeController extends Controller
      */
     public function store(Request $request)
     {
-        $user = Auth::user();
-        if ($user->role !== 'admin') {
-            return response()->json(['error' => 'Unauthorized'], 403);
-        }
-
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255|unique:leave_types,name',
             'default_quota' => 'required|integer|min:0',
@@ -61,11 +56,6 @@ class LeaveTypeController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $user = Auth::user();
-        if ($user->role !== 'admin') {
-            return response()->json(['error' => 'Unauthorized'], 403);
-        }
-
         $leaveType = LeaveType::findOrFail($id);
 
         $validator = Validator::make($request->all(), [
@@ -88,11 +78,6 @@ class LeaveTypeController extends Controller
      */
     public function destroy($id)
     {
-        $user = Auth::user();
-        if ($user->role !== 'admin') {
-            return response()->json(['error' => 'Unauthorized'], 403);
-        }
-
         $leaveType = LeaveType::findOrFail($id);
         
         // Check if leave type is being used

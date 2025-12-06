@@ -15,11 +15,6 @@ class UserController extends Controller
      */
     public function index()
     {
-        $user = Auth::user();
-        if ($user->role !== 'admin') {
-            return response()->json(['error' => 'Unauthorized'], 403);
-        }
-
         $users = User::with(['department', 'leaves'])->get();
         return response()->json($users);
     }
@@ -29,11 +24,6 @@ class UserController extends Controller
      */
     public function store(Request $request)
     {
-        $user = Auth::user();
-        if ($user->role !== 'admin') {
-            return response()->json(['error' => 'Unauthorized'], 403);
-        }
-
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
@@ -144,10 +134,7 @@ class UserController extends Controller
     public function destroy($id)
     {
         $user = Auth::user();
-        if ($user->role !== 'admin') {
-            return response()->json(['error' => 'Unauthorized'], 403);
-        }
-
+        
         // Prevent admin from deleting themselves
         if ($user->id == $id) {
             return response()->json(['error' => 'Cannot delete your own account'], 422);

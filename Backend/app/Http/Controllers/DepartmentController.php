@@ -24,11 +24,6 @@ class DepartmentController extends Controller
      */
     public function store(Request $request)
     {
-        $user = Auth::user();
-        if ($user->role !== 'admin') {
-            return response()->json(['error' => 'Unauthorized'], 403);
-        }
-
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255|unique:departments,name',
             'manager_id' => 'nullable|exists:users,id',
@@ -60,11 +55,6 @@ class DepartmentController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $user = Auth::user();
-        if ($user->role !== 'admin') {
-            return response()->json(['error' => 'Unauthorized'], 403);
-        }
-
         $department = Department::findOrFail($id);
 
         $validator = Validator::make($request->all(), [
@@ -86,11 +76,6 @@ class DepartmentController extends Controller
      */
     public function destroy($id)
     {
-        $user = Auth::user();
-        if ($user->role !== 'admin') {
-            return response()->json(['error' => 'Unauthorized'], 403);
-        }
-
         $department = Department::findOrFail($id);
         
         // Check if department has employees
