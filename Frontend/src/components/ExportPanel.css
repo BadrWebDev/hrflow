@@ -1,0 +1,144 @@
+/* Export Panel Styles */
+.export-panel {
+  position: relative;
+  display: inline-block;
+}
+
+.btn-export {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 14px;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.btn-export:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+}
+
+.export-dropdown {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  margin-top: 8px;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+  padding: 20px;
+  min-width: 400px;
+  z-index: 100;
+  max-height: 80vh;
+  overflow-y: auto;
+}
+
+.export-section {
+  margin-bottom: 24px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.export-section:last-child {
+  margin-bottom: 0;
+  padding-bottom: 0;
+  border-bottom: none;
+}
+
+.export-section h4 {
+  margin: 0 0 12px 0;
+  color: #333;
+  font-size: 16px;
+}
+
+.filter-group {
+  margin-bottom: 12px;
+}
+
+.filter-group label {
+  display: block;
+  font-size: 13px;
+  color: #666;
+  margin-bottom: 6px;
+  font-weight: 500;
+}
+
+.filter-group input[type="date"],
+.filter-group input[type="month"] {
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 14px;
+}
+
+.date-range {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.date-range input {
+  flex: 1;
+}
+
+.date-range span {
+  color: #999;
+  font-size: 13px;
+}
+
+.export-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.export-btn {
+  flex: 1;
+  min-width: 120px;
+  background: #f0f4ff;
+  color: #667eea;
+  border: 1px solid #667eea;
+  padding: 10px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 600;
+  transition: all 0.2s;
+}
+
+.export-btn:hover {
+  background: #667eea;
+  color: white;
+  transform: translateY(-1px);
+}
+
+.export-btn.pdf {
+  background: #fff0f0;
+  color: #dc3545;
+  border-color: #dc3545;
+}
+
+.export-btn.pdf:hover {
+  background: #dc3545;
+  color: white;
+}
+
+@media (max-width: 768px) {
+  .export-dropdown {
+    min-width: 300px;
+    right: auto;
+    left: 0;
+  }
+
+  .export-buttons {
+    flex-direction: column;
+  }
+
+  .export-btn {
+    min-width: 100%;
+  }
+}

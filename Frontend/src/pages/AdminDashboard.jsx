@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
 import Navbar from '../components/Navbar';
+import ExportPanel from '../components/ExportPanel';
 import leaveService from '../services/leaveService';
+import bulkService from '../services/bulkService';
 import api from '../services/api';
 import '../components/Navbar.css';
 import './Dashboard.css';
@@ -14,6 +16,8 @@ const AdminDashboard = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+  const [selectedLeaves, setSelectedLeaves] = useState([]);
+  const [selectedUsers, setSelectedUsers] = useState([]);
 
   useEffect(() => {
     fetchData();
@@ -74,6 +78,89 @@ const AdminDashboard = () => {
     }
   };
 
+  // Bulk operations
+  const handleBulkApprove = async () => {
+    if (selectedLeaves.length === 0) {
+      setError('Please select leaves to approve');
+      return;
+    }
+
+    if (!window.confirm(`Approve ${selectedLeaves.length} leave(s)?`)) return;
+
+    try {
+      const result = await bulkService.bulkApproveLeaves(selectedLeaves);
+      setSuccess(result.message);
+      setSelectedLeaves([]);
+      fetchData();
+    } catch (err) {
+      setError('Failed to approve leaves');
+    }
+  };
+
+  const handleBulkReject = async () => {
+    if (selectedLeaves.length === 0) {
+      setError('Please select leaves to reject');
+      return;
+    }
+
+    if (!window.confirm(`Reject ${selectedLeaves.length} leave(s)?`)) return;
+
+    try {
+      const result = await bulkService.bulkRejectLeaves(selectedLeaves);
+      setSuccess(result.message);
+      setSelectedLeaves([]);
+      fetchData();
+    } catch (err) {
+      setError('Failed to reject leaves');
+    }
+  };
+
+  const handleBulkDeleteUsers = async () => {
+    if (selectedUsers.length === 0) {
+      setError('Please select users to delete');
+      return;
+    }
+
+    if (!window.confirm(`Delete ${selectedUsers.length} user(s)? This action cannot be undone.`)) return;
+
+    try {
+      const result = await bulkService.bulkDeleteUsers(selectedUsers);
+      setSuccess(result.message);
+      setSelectedUsers([]);
+      fetchData();
+    } catch (err) {
+      setError('Failed to delete users');
+    }
+  };
+
+  const toggleLeaveSelection = (leaveId) => {
+    setSelectedLeaves(prev =>
+      prev.includes(leaveId) ? prev.filter(id => id !== leaveId) : [...prev, leaveId]
+    );
+  };
+
+  const toggleUserSelection = (userId) => {
+    setSelectedUsers(prev =>
+      prev.includes(userId) ? prev.filter(id => id !== userId) : [...prev, userId]
+    );
+  };
+
+  const selectAllLeaves = () => {
+    if (selectedLeaves.length === leaves.filter(l => l.status === 'pending').length) {
+      setSelectedLeaves([]);
+    } else {
+      setSelectedLeaves(leaves.filter(l => l.status === 'pending').map(l => l.id));
+    }
+  };
+
+  const selectAllUsers = () => {
+    if (selectedUsers.length === users.length) {
+      setSelectedUsers([]);
+    } else {
+      setSelectedUsers(users.map(u => u.id));
+    }
+  };
+
   const pendingLeaves = leaves.filter((l) => l.status === 'pending').length;
 
   return (
@@ -83,7 +170,15 @@ const AdminDashboard = () => {
         <div className="dashboard-content">
           <div className="dashboard-header">
             <h2>Admin Dashboard</h2>
-            <p>Manage employees, leaves, and company settings</p>
+            <div className="header-actions">
+              <ExportPanel />
+              <button 
+                className="btn-primary"
+                onClick={() => window.location.href = '/#/role-management'}
+              >
+                🔐 Roles
+              </button>
+            </div>
           </div>
 
           {error && <div className="error-message">{error}</div>}
@@ -142,6 +237,17 @@ const AdminDashboard = () => {
               <>
                 {activeTab === 'leaves' && (
                   <div className="leaves-table">
+                    {selectedLeaves.length > 0 && (
+                      <div className="bulk-actions">
+                        <span>{selectedLeaves.length} selected</span>
+                        <button className="btn-success btn-sm" onClick={handleBulkApprove}>
+                          ✓ Approve Selected
+                        </button>
+                        <button className="btn-danger btn-sm" onClick={handleBulkReject}>
+                          ✗ Reject Selected
+                        </button>
+                      </div>
+                    )}
                     {leaves.length === 0 ? (
                       <div className="empty-state">
                         <p>No leave requests</p>
@@ -150,6 +256,13 @@ const AdminDashboard = () => {
                       <table>
                         <thead>
                           <tr>
+                            <th>
+                              <input
+                                type="checkbox"
+                                onChange={selectAllLeaves}
+                                checked={selectedLeaves.length === leaves.filter(l => l.status === 'pending').length && leaves.filter(l => l.status === 'pending').length > 0}
+                              />
+                            </th>
                             <th>Employee</th>
                             <th>Type</th>
                             <th>Start Date</th>
@@ -162,6 +275,14 @@ const AdminDashboard = () => {
                         <tbody>
                           {leaves.map((leave) => (
                             <tr key={leave.id}>
+                              <td>
+                                <input
+                                  type="checkbox"
+                                  checked={selectedLeaves.includes(leave.id)}
+                                  onChange={() => toggleLeaveSelection(leave.id)}
+                                  disabled={leave.status !== 'pending'}
+                                />
+                              </td>
                               <td>{leave.user?.name}</td>
                               <td>{leave.leave_type?.name}</td>
                               <td>{new Date(leave.start_date).toLocaleDateString()}</td>
@@ -200,9 +321,24 @@ const AdminDashboard = () => {
 
                 {activeTab === 'users' && (
                   <div className="leaves-table">
+                    {selectedUsers.length > 0 && (
+                      <div className="bulk-actions">
+                        <span>{selectedUsers.length} selected</span>
+                        <button className="btn-danger btn-sm" onClick={handleBulkDeleteUsers}>
+                          🗑️ Delete Selected
+                        </button>
+                      </div>
+                    )}
                     <table>
                       <thead>
                         <tr>
+                          <th>
+                            <input
+                              type="checkbox"
+                              onChange={selectAllUsers}
+                              checked={selectedUsers.length === users.length && users.length > 0}
+                            />
+                          </th>
                           <th>Name</th>
                           <th>Email</th>
                           <th>Role</th>
@@ -213,6 +349,13 @@ const AdminDashboard = () => {
                       <tbody>
                         {users.map((user) => (
                           <tr key={user.id}>
+                            <td>
+                              <input
+                                type="checkbox"
+                                checked={selectedUsers.includes(user.id)}
+                                onChange={() => toggleUserSelection(user.id)}
+                              />
+                            </td>
                             <td>{user.name}</td>
                             <td>{user.email}</td>
                             <td>

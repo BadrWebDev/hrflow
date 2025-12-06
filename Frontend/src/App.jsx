@@ -5,6 +5,7 @@ import Login from './pages/Login';
 import Register from './pages/Register';
 import EmployeeDashboard from './pages/EmployeeDashboard';
 import AdminDashboard from './pages/AdminDashboard';
+import RoleManagement from './pages/RoleManagement';
 import { useAuth } from './context/AuthContext';
 
 // Dashboard router component
@@ -25,6 +26,14 @@ function App() {
             element={
               <PrivateRoute>
                 <DashboardRouter />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/role-management"
+            element={
+              <PrivateRoute>
+                <RoleManagement />
               </PrivateRoute>
             }
           />
