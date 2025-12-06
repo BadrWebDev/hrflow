@@ -1,9 +1,11 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import roleService from '../services/roleService';
 import './RoleManagement.css';
 
 const RoleManagement = () => {
+  const navigate = useNavigate();
   const [roles, setRoles] = useState([]);
   const [permissions, setPermissions] = useState({});
   const [loading, setLoading] = useState(true);
@@ -120,7 +122,12 @@ const RoleManagement = () => {
       <Navbar />
       <div className="dashboard-container">
         <div className="dashboard-header">
-          <h1>Role Management</h1>
+          <div>
+            <button className="btn-secondary" onClick={() => navigate('/dashboard')} style={{ marginRight: '12px' }}>
+              ← Back
+            </button>
+            <h1 style={{ display: 'inline' }}>Role Management</h1>
+          </div>
           <button className="btn-primary" onClick={() => handleOpenModal()}>
             + Create Role
           </button>

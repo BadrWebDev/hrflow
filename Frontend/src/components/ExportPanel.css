@@ -130,8 +130,8 @@
 @media (max-width: 768px) {
   .export-dropdown {
     min-width: 300px;
-    right: auto;
-    left: 0;
+    right: 0;
+    left: auto;
   }
 
   .export-buttons {

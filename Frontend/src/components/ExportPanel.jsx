@@ -1,14 +1,31 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import exportService from '../services/exportService';
 import './ExportPanel.css';
 
 const ExportPanel = () => {
   const [showPanel, setShowPanel] = useState(false);
+  const panelRef = useRef(null);
   const [filters, setFilters] = useState({
     startDate: '',
     endDate: '',
     month: new Date().toISOString().slice(0, 7), // YYYY-MM format
   });
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (panelRef.current && !panelRef.current.contains(event.target)) {
+        setShowPanel(false);
+      }
+    };
+
+    if (showPanel) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [showPanel]);
 
   const handleExport = (type) => {
     switch (type) {
@@ -36,7 +53,7 @@ const ExportPanel = () => {
   };
 
   return (
-    <div className="export-panel">
+    <div className="export-panel" ref={panelRef}>
       <button
         className="btn-export"
         onClick={() => setShowPanel(!showPanel)}

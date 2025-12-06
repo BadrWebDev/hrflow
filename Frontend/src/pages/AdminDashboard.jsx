@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import ExportPanel from '../components/ExportPanel';
 import leaveService from '../services/leaveService';
@@ -8,6 +9,7 @@ import '../components/Navbar.css';
 import './Dashboard.css';
 
 const AdminDashboard = () => {
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('leaves');
   const [leaves, setLeaves] = useState([]);
   const [users, setUsers] = useState([]);
@@ -174,7 +176,7 @@ const AdminDashboard = () => {
               <ExportPanel />
               <button 
                 className="btn-primary"
-                onClick={() => window.location.href = '/#/role-management'}
+                onClick={() => navigate('/role-management')}
               >
                 🔐 Roles
               </button>
