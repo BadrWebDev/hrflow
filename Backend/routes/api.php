@@ -5,6 +5,9 @@ use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\LeaveTypeController;
 use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\RoleController;
+use App\Http\Controllers\BulkOperationController;
+use App\Http\Controllers\ExportController;
 
 // Public authentication routes
 Route::post('/register', [ApiAuthController::class, 'register']);
@@ -59,5 +62,26 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/leave-types', [LeaveTypeController::class, 'store']);
         Route::put('/leave-types/{id}', [LeaveTypeController::class, 'update']);
         Route::delete('/leave-types/{id}', [LeaveTypeController::class, 'destroy']);
+
+        // Role & Permission management
+        Route::get('/roles', [RoleController::class, 'index']);
+        Route::get('/permissions', [RoleController::class, 'permissions']);
+        Route::post('/roles', [RoleController::class, 'store']);
+        Route::put('/roles/{id}', [RoleController::class, 'update']);
+        Route::delete('/roles/{id}', [RoleController::class, 'destroy']);
+        Route::post('/users/{userId}/assign-role', [RoleController::class, 'assignRole']);
+
+        // Bulk operations
+        Route::post('/bulk/approve-leaves', [BulkOperationController::class, 'bulkApproveLeaves']);
+        Route::post('/bulk/reject-leaves', [BulkOperationController::class, 'bulkRejectLeaves']);
+        Route::post('/bulk/delete-users', [BulkOperationController::class, 'bulkDeleteUsers']);
+
+        // Export & Reporting
+        Route::get('/export/users/excel', [ExportController::class, 'exportUsersExcel']);
+        Route::get('/export/users/csv', [ExportController::class, 'exportUsersCSV']);
+        Route::get('/export/leaves/excel', [ExportController::class, 'exportLeavesExcel']);
+        Route::get('/export/leaves/csv', [ExportController::class, 'exportLeavesCSV']);
+        Route::get('/export/leave-report/pdf', [ExportController::class, 'exportLeaveReportPDF']);
+        Route::get('/export/monthly-summary/pdf', [ExportController::class, 'exportMonthlySummaryPDF']);
     });
 });

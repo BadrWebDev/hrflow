@@ -1,0 +1,125 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use Illuminate\Http\Request;
+use Spatie\Permission\Models\Role;
+use Spatie\Permission\Models\Permission;
+use Illuminate\Support\Facades\Validator;
+
+class RoleController extends Controller
+{
+    /**
+     * Get all roles with their permissions
+     */
+    public function index()
+    {
+        $roles = Role::with('permissions')->get();
+        return response()->json($roles);
+    }
+
+    /**
+     * Get all available permissions
+     */
+    public function permissions()
+    {
+        $permissions = Permission::all()->groupBy(function($permission) {
+            return explode(' ', $permission->name)[1] ?? 'other';
+        });
+        
+        return response()->json($permissions);
+    }
+
+    /**
+     * Create a new role
+     */
+    public function store(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'name' => 'required|string|unique:roles,name',
+            'permissions' => 'array',
+            'permissions.*' => 'exists:permissions,name',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
+        }
+
+        $role = Role::create(['name' => $request->name]);
+        
+        if ($request->has('permissions')) {
+            $role->givePermissionTo($request->permissions);
+        }
+
+        return response()->json($role->load('permissions'), 201);
+    }
+
+    /**
+     * Update a role
+     */
+    public function update(Request $request, $id)
+    {
+        $role = Role::findOrFail($id);
+
+        // Prevent editing system roles
+        if (in_array($role->name, ['admin', 'employee', 'department_manager'])) {
+            return response()->json(['error' => 'Cannot edit system roles'], 403);
+        }
+
+        $validator = Validator::make($request->all(), [
+            'name' => 'required|string|unique:roles,name,' . $id,
+            'permissions' => 'array',
+            'permissions.*' => 'exists:permissions,name',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
+        }
+
+        $role->update(['name' => $request->name]);
+        
+        if ($request->has('permissions')) {
+            $role->syncPermissions($request->permissions);
+        }
+
+        return response()->json($role->load('permissions'));
+    }
+
+    /**
+     * Delete a role
+     */
+    public function destroy($id)
+    {
+        $role = Role::findOrFail($id);
+
+        // Prevent deleting system roles
+        if (in_array($role->name, ['admin', 'employee', 'department_manager'])) {
+            return response()->json(['error' => 'Cannot delete system roles'], 403);
+        }
+
+        $role->delete();
+        return response()->json(['message' => 'Role deleted successfully']);
+    }
+
+    /**
+     * Assign role to user
+     */
+    public function assignRole(Request $request, $userId)
+    {
+        $validator = Validator::make($request->all(), [
+            'role' => 'required|exists:roles,name',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
+        }
+
+        $user = \App\Models\User::findOrFail($userId);
+        $user->syncRoles([$request->role]);
+
+        return response()->json([
+            'message' => 'Role assigned successfully',
+            'user' => $user->load('roles')
+        ]);
+    }
+}

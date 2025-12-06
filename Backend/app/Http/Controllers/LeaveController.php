@@ -18,9 +18,18 @@ class LeaveController extends Controller
     {
         $user = Auth::user();
 
-        if ($user->role === 'admin') {
+        if ($user->hasRole('admin')) {
+            // Admin sees all leaves
             $leaves = Leave::with(['user', 'leaveType', 'approver'])->get();
+        } elseif ($user->hasRole('department_manager') && $user->department_id) {
+            // Department manager sees their department's leaves
+            $leaves = Leave::with(['user', 'leaveType', 'approver'])
+                ->whereHas('user', function($query) use ($user) {
+                    $query->where('department_id', $user->department_id);
+                })
+                ->get();
         } else {
+            // Employee sees only their own leaves
             $leaves = Leave::with('leaveType')->where('user_id', $user->id)->get();
         }
 

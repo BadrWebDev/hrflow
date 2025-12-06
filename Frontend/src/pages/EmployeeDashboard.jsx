@@ -54,7 +54,14 @@ const EmployeeDashboard = () => {
       });
       fetchData();
     } catch (err) {
-      setError(err.response?.data?.error || 'Failed to submit leave request');
+      // Handle validation errors
+      if (err.response?.data?.errors) {
+        const errors = err.response.data.errors;
+        const errorMessages = Object.values(errors).flat().join(', ');
+        setError(errorMessages);
+      } else {
+        setError(err.response?.data?.error || 'Failed to submit leave request');
+      }
     }
   };
 
