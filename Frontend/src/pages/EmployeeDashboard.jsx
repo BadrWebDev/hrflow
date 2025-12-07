@@ -214,9 +214,11 @@ const EmployeeDashboard = () => {
               {leaves.length === 0 ? (
                 <div className="empty-state">
                   <p>No leave requests yet</p>
-                  <button className="btn btn-primary" onClick={() => setShowForm(true)}>
-                    Create Your First Request
-                  </button>
+                  {hasPermission('create leave') && (
+                    <button className="btn btn-primary" onClick={() => setShowForm(true)}>
+                      Create Your First Request
+                    </button>
+                  )}
                 </div>
               ) : (
                 <table>

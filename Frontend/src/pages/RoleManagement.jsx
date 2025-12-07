@@ -60,12 +60,44 @@ const RoleManagement = () => {
   };
 
   const handlePermissionToggle = (permName) => {
-    setFormData(prev => ({
-      ...prev,
-      permissions: prev.permissions.includes(permName)
+    setFormData(prev => {
+      let newPermissions = prev.permissions.includes(permName)
         ? prev.permissions.filter(p => p !== permName)
-        : [...prev.permissions, permName],
-    }));
+        : [...prev.permissions, permName];
+      
+      // Auto-add view permission when CRUD permissions are selected
+      const crudPermissions = {
+        'create leave': 'view leaves',
+        'edit leave': 'view leaves',
+        'delete leave': 'view leaves',
+        'approve leave': 'view leaves',
+        'reject leave': 'view leaves',
+        'create user': 'view users',
+        'edit user': 'view users',
+        'delete user': 'view users',
+        'create department': 'view departments',
+        'edit department': 'view departments',
+        'delete department': 'view departments',
+        'create leave type': 'view leave types',
+        'edit leave type': 'view leave types',
+        'delete leave type': 'view leave types',
+        'create role': 'view roles',
+        'edit role': 'view roles',
+        'delete role': 'view roles',
+      };
+      
+      // If adding a CRUD permission, also add its view permission
+      if (crudPermissions[permName] && !prev.permissions.includes(permName)) {
+        if (!newPermissions.includes(crudPermissions[permName])) {
+          newPermissions.push(crudPermissions[permName]);
+        }
+      }
+      
+      return {
+        ...prev,
+        permissions: newPermissions
+      };
+    });
   };
 
   const handleSubmit = async (e) => {
