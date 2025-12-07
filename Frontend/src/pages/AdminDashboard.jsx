@@ -20,10 +20,27 @@ const AdminDashboard = () => {
   const [success, setSuccess] = useState('');
   const [selectedLeaves, setSelectedLeaves] = useState([]);
   const [selectedUsers, setSelectedUsers] = useState([]);
+  const [showRoleModal, setShowRoleModal] = useState(false);
+  const [selectedUser, setSelectedUser] = useState(null);
+  const [availableRoles, setAvailableRoles] = useState([]);
+  const [selectedRole, setSelectedRole] = useState('');
 
   useEffect(() => {
     fetchData();
   }, [activeTab]);
+
+  useEffect(() => {
+    fetchRoles();
+  }, []);
+
+  const fetchRoles = async () => {
+    try {
+      const response = await api.get('/roles');
+      setAvailableRoles(response.data);
+    } catch (err) {
+      console.error('Failed to load roles:', err);
+    }
+  };
 
   const fetchData = async () => {
     setLoading(true);
@@ -77,6 +94,28 @@ const AdminDashboard = () => {
       fetchData();
     } catch (err) {
       setError(err.response?.data?.error || 'Failed to delete user');
+    }
+  };
+
+  const handleAssignRole = (user) => {
+    setSelectedUser(user);
+    setSelectedRole(user.roles?.[0]?.name || '');
+    setShowRoleModal(true);
+  };
+
+  const handleRoleSubmit = async () => {
+    if (!selectedRole) {
+      setError('Please select a role');
+      return;
+    }
+
+    try {
+      await api.post(`/users/${selectedUser.id}/assign-role`, { role: selectedRole });
+      setSuccess(`Role assigned to ${selectedUser.name} successfully!`);
+      setShowRoleModal(false);
+      fetchData();
+    } catch (err) {
+      setError(err.response?.data?.error || 'Failed to assign role');
     }
   };
 
@@ -361,18 +400,32 @@ const AdminDashboard = () => {
                             <td>{user.name}</td>
                             <td>{user.email}</td>
                             <td>
-                              <span className={`status-badge status-${user.role === 'admin' ? 'approved' : 'pending'}`}>
-                                {user.role}
-                              </span>
+                              {user.roles && user.roles.length > 0 ? (
+                                user.roles.map(role => (
+                                  <span key={role.id} className={`status-badge status-${role.name === 'admin' ? 'approved' : 'pending'}`} style={{marginRight: '4px'}}>
+                                    {role.name}
+                                  </span>
+                                ))
+                              ) : (
+                                <span className="status-badge">No role</span>
+                              )}
                             </td>
                             <td>{user.department?.name || 'N/A'}</td>
                             <td>
-                              <button
-                                className="btn btn-danger btn-sm"
-                                onClick={() => handleDeleteUser(user.id)}
-                              >
-                                Delete
-                              </button>
+                              <div style={{display: 'flex', gap: '8px'}}>
+                                <button
+                                  className="btn btn-primary btn-sm"
+                                  onClick={() => handleAssignRole(user)}
+                                >
+                                  👤 Assign Role
+                                </button>
+                                <button
+                                  className="btn btn-danger btn-sm"
+                                  onClick={() => handleDeleteUser(user.id)}
+                                >
+                                  Delete
+                                </button>
+                              </div>
                             </td>
                           </tr>
                         ))}
@@ -433,6 +486,49 @@ const AdminDashboard = () => {
           </div>
         </div>
       </div>
+
+      {/* Role Assignment Modal */}
+      {showRoleModal && (
+        <div className="modal-overlay" onClick={() => setShowRoleModal(false)}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()} style={{maxWidth: '400px'}}>
+            <h2>Assign Role to {selectedUser?.name}</h2>
+            
+            {error && <div className="error-message">{error}</div>}
+            {success && <div className="success-message">{success}</div>}
+
+            <div className="form-group">
+              <label>Select Role</label>
+              <select 
+                value={selectedRole} 
+                onChange={(e) => setSelectedRole(e.target.value)}
+                className="form-control"
+              >
+                <option value="">Choose a role...</option>
+                {availableRoles.map(role => (
+                  <option key={role.id} value={role.name}>
+                    {role.name} ({role.permissions.length} permissions)
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div className="modal-actions" style={{display: 'flex', gap: '10px', marginTop: '20px'}}>
+              <button 
+                className="btn btn-secondary" 
+                onClick={() => setShowRoleModal(false)}
+              >
+                Cancel
+              </button>
+              <button 
+                className="btn btn-primary" 
+                onClick={handleRoleSubmit}
+              >
+                Assign Role
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 };

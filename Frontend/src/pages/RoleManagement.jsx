@@ -73,6 +73,16 @@ const RoleManagement = () => {
     setError('');
     setSuccess('');
 
+    if (!formData.name.trim()) {
+      setError('Role name is required');
+      return;
+    }
+
+    if (formData.permissions.length === 0) {
+      setError('Please select at least one permission');
+      return;
+    }
+
     try {
       if (editingRole) {
         await roleService.updateRole(editingRole.id, formData);
@@ -84,7 +94,14 @@ const RoleManagement = () => {
       fetchData();
       setTimeout(() => handleCloseModal(), 1500);
     } catch (err) {
-      setError(err.response?.data?.error || 'Failed to save role');
+      const errorMsg = err.response?.data?.message || err.response?.data?.error || 'Failed to save role';
+      const validationErrors = err.response?.data?.errors;
+      if (validationErrors) {
+        const firstError = Object.values(validationErrors)[0][0];
+        setError(firstError);
+      } else {
+        setError(errorMsg);
+      }
     }
   };
 
@@ -93,12 +110,19 @@ const RoleManagement = () => {
       return;
     }
 
+    setError('');
+    setSuccess('');
+
     try {
       await roleService.deleteRole(id);
       setSuccess('Role deleted successfully!');
       fetchData();
+      setTimeout(() => setSuccess(''), 3000);
     } catch (err) {
-      setError(err.response?.data?.error || 'Failed to delete role');
+      console.error('Delete error:', err.response?.data);
+      const errorMsg = err.response?.data?.error || err.response?.data?.message || 'Failed to delete role';
+      setError(errorMsg);
+      setTimeout(() => setError(''), 5000);
     }
   };
 

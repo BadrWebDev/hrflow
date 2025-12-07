@@ -5,34 +5,46 @@ const AuthContext = createContext(null);
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
+  const [permissions, setPermissions] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     // Check if user is logged in on mount
     const currentUser = authService.getCurrentUser();
+    const userPermissions = authService.getUserPermissions();
     setUser(currentUser);
+    setPermissions(userPermissions);
     setLoading(false);
   }, []);
 
   const login = async (credentials) => {
     const data = await authService.login(credentials);
     setUser(data.user);
+    setPermissions(data.permissions || []);
     return data;
   };
 
   const register = async (userData) => {
     const data = await authService.register(userData);
     setUser(data.user);
+    setPermissions(data.permissions || []);
     return data;
   };
 
   const logout = async () => {
     await authService.logout();
     setUser(null);
+    setPermissions([]);
+  };
+
+  const hasPermission = (permission) => {
+    return permissions.includes(permission);
   };
 
   const value = {
     user,
+    permissions,
+    hasPermission,
     login,
     register,
     logout,

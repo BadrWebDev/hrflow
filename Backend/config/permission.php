@@ -28,6 +28,35 @@ return [
 
     ],
 
+    /*
+     * The model you want to use as the User model.
+     */
+
+    'user_model' => App\Models\User::class,
+
+    /*
+     * When set to true, the method for checking permissions will be registered on the gate.
+     * Set this to false if you want to implement custom logic for checking permissions.
+     */
+
+    'register_permission_check_method' => true,
+
+    /*
+     * When set to true, the required permission names are added to exception messages.
+     * This could be considered an information leak in some contexts, so the default
+     * setting is false here for optimum safety.
+     */
+
+    'display_permission_in_exception' => false,
+
+    /*
+     * When set to true, the required role names are added to exception messages.
+     * This could be considered an information leak in some contexts, so the default
+     * setting is false here for optimum safety.
+     */
+
+    'display_role_in_exception' => false,
+
     'table_names' => [
 
         /*

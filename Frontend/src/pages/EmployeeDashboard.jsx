@@ -1,10 +1,12 @@
 import { useState, useEffect } from 'react';
 import Navbar from '../components/Navbar';
 import leaveService from '../services/leaveService';
+import { useAuth } from '../context/AuthContext';
 import '../components/Navbar.css';
 import './Dashboard.css';
 
 const EmployeeDashboard = () => {
+  const { hasPermission } = useAuth();
   const [leaves, setLeaves] = useState([]);
   const [leaveTypes, setLeaveTypes] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -129,15 +131,17 @@ const EmployeeDashboard = () => {
           <div className="card">
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
               <h3>Leave Requests</h3>
-              <button
-                className="btn btn-primary"
-                onClick={() => setShowForm(!showForm)}
-              >
-                {showForm ? 'Cancel' : 'New Request'}
-              </button>
+              {hasPermission('create leave') && (
+                <button
+                  className="btn btn-primary"
+                  onClick={() => setShowForm(!showForm)}
+                >
+                  {showForm ? 'Cancel' : 'New Request'}
+                </button>
+              )}
             </div>
 
-            {showForm && (
+            {showForm && hasPermission('create leave') && (
               <form onSubmit={handleSubmit} className="leave-form">
                 <div className="form-row">
                   <div className="form-group">
@@ -235,7 +239,7 @@ const EmployeeDashboard = () => {
                           </span>
                         </td>
                         <td>
-                          {leave.status === 'pending' && (
+                          {leave.status === 'pending' && hasPermission('delete leave') && (
                             <button
                               className="btn btn-danger btn-sm"
                               onClick={() => handleCancel(leave.id)}

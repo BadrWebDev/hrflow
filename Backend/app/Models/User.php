@@ -70,4 +70,42 @@ class User extends Authenticatable
     {
         return $this->hasMany(Notification::class);
     }
+
+    /**
+     * Check if user has a specific permission (bypasses Spatie to avoid morph map issues)
+     */
+    public function hasPermissionTo($permission): bool
+    {
+        // Get user's role IDs
+        $roleIds = \DB::table('model_has_roles')
+            ->where('model_type', 'App\\Models\\User')
+            ->where('model_id', $this->id)
+            ->pluck('role_id');
+
+        if ($roleIds->isEmpty()) {
+            return false;
+        }
+
+        // Check if any of the user's roles have this permission
+        $hasPermission = \DB::table('role_has_permissions')
+            ->join('permissions', 'role_has_permissions.permission_id', '=', 'permissions.id')
+            ->whereIn('role_has_permissions.role_id', $roleIds)
+            ->where('permissions.name', $permission)
+            ->exists();
+
+        return $hasPermission;
+    }
+
+    /**
+     * Check if user has a specific role (bypasses Spatie to avoid morph map issues)
+     */
+    public function hasRole($role): bool
+    {
+        return \DB::table('model_has_roles')
+            ->join('roles', 'model_has_roles.role_id', '=', 'roles.id')
+            ->where('model_has_roles.model_type', 'App\\Models\\User')
+            ->where('model_has_roles.model_id', $this->id)
+            ->where('roles.name', $role)
+            ->exists();
+    }
 }

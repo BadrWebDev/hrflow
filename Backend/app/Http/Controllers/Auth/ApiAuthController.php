@@ -66,8 +66,28 @@ class ApiAuthController extends Controller
         $user = User::where('email', $request->email)->firstOrFail();
         $token = $user->createToken('auth_token')->plainTextToken;
 
+        // Get user's roles and permissions
+        $roles = \DB::table('model_has_roles')
+            ->join('roles', 'model_has_roles.role_id', '=', 'roles.id')
+            ->where('model_has_roles.model_type', 'App\\Models\\User')
+            ->where('model_has_roles.model_id', $user->id)
+            ->select('roles.*')
+            ->get();
+
+        $permissions = collect();
+        if ($roles->isNotEmpty()) {
+            $roleIds = $roles->pluck('id');
+            $permissions = \DB::table('role_has_permissions')
+                ->join('permissions', 'role_has_permissions.permission_id', '=', 'permissions.id')
+                ->whereIn('role_has_permissions.role_id', $roleIds)
+                ->select('permissions.name')
+                ->pluck('name');
+        }
+
         return response()->json([
             'user' => $user,
+            'roles' => $roles,
+            'permissions' => $permissions,
             'token' => $token,
             'token_type' => 'Bearer',
         ]);

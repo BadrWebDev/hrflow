@@ -58,44 +58,61 @@ class RolesAndPermissionsSeeder extends Seeder
         ];
 
         foreach ($permissions as $permission) {
-            Permission::create(['name' => $permission]);
+            Permission::firstOrCreate(
+                ['name' => $permission, 'guard_name' => 'sanctum']
+            );
         }
 
         // Create roles and assign permissions
         
         // Admin role - all permissions
-        $admin = Role::create(['name' => 'admin']);
-        $admin->givePermissionTo(Permission::all());
+        $admin = Role::firstOrCreate(
+            ['name' => 'admin', 'guard_name' => 'sanctum']
+        );
+        if ($admin->permissions->isEmpty()) {
+            $admin->givePermissionTo(Permission::all());
+        }
 
         // Department Manager role - limited permissions
-        $manager = Role::create(['name' => 'department_manager']);
-        $manager->givePermissionTo([
-            'view leaves',
-            'approve leave',
-            'reject leave',
-            'view users',
-            'view departments',
-            'view leave types',
-            'view reports',
-        ]);
+        $manager = Role::firstOrCreate(
+            ['name' => 'department_manager', 'guard_name' => 'sanctum']
+        );
+        if ($manager->permissions->isEmpty()) {
+            $manager->givePermissionTo([
+                'view leaves',
+                'approve leave',
+                'reject leave',
+                'view users',
+                'view departments',
+                'view leave types',
+                'view reports',
+            ]);
+        }
 
         // Employee role - basic permissions
-        $employee = Role::create(['name' => 'employee']);
-        $employee->givePermissionTo([
-            'view leaves',
-            'create leave',
-            'delete leave', // own leaves only
+        $employee = Role::firstOrCreate([
+            'name' => 'employee',
+            'guard_name' => 'sanctum'
         ]);
+        if ($employee->permissions->isEmpty()) {
+            $employee->givePermissionTo([
+                'view leaves',
+                'create leave',
+                'delete leave', // own leaves only
+            ]);
+        }
 
         // Assign roles to existing users
         $adminUser = User::where('email', 'admin@hrflow.test')->first();
-        if ($adminUser) {
+        if ($adminUser && !$adminUser->hasRole('admin')) {
             $adminUser->assignRole('admin');
         }
 
         $employees = User::where('role', 'employee')->get();
         foreach ($employees as $emp) {
-            $emp->assignRole('employee');
+            if (!$emp->hasRole('employee')) {
+                $emp->assignRole('employee');
+            }
         }
     }
 }

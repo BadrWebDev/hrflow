@@ -18,6 +18,11 @@ class LeaveController extends Controller
     {
         $user = Auth::user();
 
+        // Check permission
+        if (!$user->hasPermissionTo('view leaves')) {
+            return response()->json(['error' => 'You do not have permission to view leaves'], 403);
+        }
+
         if ($user->hasRole('admin')) {
             // Admin sees all leaves
             $leaves = Leave::with(['user', 'leaveType', 'approver'])->get();
@@ -41,6 +46,13 @@ class LeaveController extends Controller
      */
     public function store(Request $request)
     {
+        $user = Auth::user();
+
+        // Check permission
+        if (!$user->hasPermissionTo('create leave')) {
+            return response()->json(['error' => 'You do not have permission to create leave requests'], 403);
+        }
+
         $validator = Validator::make($request->all(), [
             'leave_type_id' => 'required|exists:leave_types,id',
             'start_date' => 'required|date',
@@ -91,6 +103,14 @@ class LeaveController extends Controller
         $leave = Leave::findOrFail($id);
         $user = Auth::user();
 
+        // Check permission based on action
+        if ($request->status === 'approved' && !$user->hasPermissionTo('approve leave')) {
+            return response()->json(['error' => 'You do not have permission to approve leaves'], 403);
+        }
+        if ($request->status === 'rejected' && !$user->hasPermissionTo('reject leave')) {
+            return response()->json(['error' => 'You do not have permission to reject leaves'], 403);
+        }
+
         $validator = Validator::make($request->all(), [
             'status' => 'required|in:approved,rejected,pending',
         ]);
@@ -126,8 +146,14 @@ class LeaveController extends Controller
         $user = Auth::user();
         $leave = Leave::findOrFail($id);
 
-        if ($user->role !== 'admin' && $leave->user_id !== $user->id) {
-            return response()->json(['error'=>'Unauthorized'], 403);
+        // Check permission
+        if (!$user->hasPermissionTo('delete leave')) {
+            return response()->json(['error' => 'You do not have permission to delete leaves'], 403);
+        }
+
+        // Employees can only delete their own leaves
+        if (!$user->hasRole('admin') && $leave->user_id !== $user->id) {
+            return response()->json(['error'=>'You can only delete your own leave requests'], 403);
         }
 
         // Load relationships before deleting
