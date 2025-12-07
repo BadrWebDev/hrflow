@@ -14,6 +14,12 @@ class LeaveTypeController extends Controller
      */
     public function index()
     {
+        $user = Auth::user();
+        
+        if (!$user->hasPermissionTo('view leave types')) {
+            return response()->json(['error' => 'You do not have permission to view leave types'], 403);
+        }
+
         $leaveTypes = LeaveType::withCount('leaves')->get();
         return response()->json($leaveTypes);
     }
@@ -78,6 +84,12 @@ class LeaveTypeController extends Controller
      */
     public function destroy($id)
     {
+        $user = Auth::user();
+        
+        if (!$user->hasPermissionTo('delete leave type')) {
+            return response()->json(['error' => 'You do not have permission to delete leave types'], 403);
+        }
+
         $leaveType = LeaveType::findOrFail($id);
         
         // Check if leave type is being used

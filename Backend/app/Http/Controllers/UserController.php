@@ -15,6 +15,12 @@ class UserController extends Controller
      */
     public function index()
     {
+        $user = Auth::user();
+        
+        if (!$user->hasPermissionTo('view users')) {
+            return response()->json(['error' => 'You do not have permission to view users'], 403);
+        }
+
         $users = User::with(['department', 'leaves', 'roles'])->get();
         return response()->json($users);
     }
@@ -134,6 +140,10 @@ class UserController extends Controller
     public function destroy($id)
     {
         $user = Auth::user();
+        
+        if (!$user->hasPermissionTo('delete user')) {
+            return response()->json(['error' => 'You do not have permission to delete users'], 403);
+        }
         
         // Prevent admin from deleting themselves
         if ($user->id == $id) {

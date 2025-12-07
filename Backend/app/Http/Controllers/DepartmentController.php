@@ -15,6 +15,12 @@ class DepartmentController extends Controller
      */
     public function index()
     {
+        $user = Auth::user();
+        
+        if (!$user->hasPermissionTo('view departments')) {
+            return response()->json(['error' => 'You do not have permission to view departments'], 403);
+        }
+
         $departments = Department::with(['manager', 'users'])->get();
         return response()->json($departments);
     }
@@ -76,6 +82,12 @@ class DepartmentController extends Controller
      */
     public function destroy($id)
     {
+        $user = Auth::user();
+        
+        if (!$user->hasPermissionTo('delete department')) {
+            return response()->json(['error' => 'You do not have permission to delete departments'], 403);
+        }
+
         $department = Department::findOrFail($id);
         
         // Check if department has employees

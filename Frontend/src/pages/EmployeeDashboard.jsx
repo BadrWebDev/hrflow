@@ -33,7 +33,11 @@ const EmployeeDashboard = () => {
       setLeaves(leavesData);
       setLeaveTypes(typesData);
     } catch (err) {
-      setError('Failed to load data');
+      if (err.response?.data?.error) {
+        setError(err.response.data.error);
+      } else {
+        setError('Failed to load data');
+      }
     } finally {
       setLoading(false);
     }

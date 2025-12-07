@@ -5,11 +5,13 @@ import ExportPanel from '../components/ExportPanel';
 import leaveService from '../services/leaveService';
 import bulkService from '../services/bulkService';
 import api from '../services/api';
+import { useAuth } from '../context/AuthContext';
 import '../components/Navbar.css';
 import './Dashboard.css';
 
 const AdminDashboard = () => {
   const navigate = useNavigate();
+  const { hasPermission } = useAuth();
   const [activeTab, setActiveTab] = useState('leaves');
   const [leaves, setLeaves] = useState([]);
   const [users, setUsers] = useState([]);
@@ -116,6 +118,30 @@ const AdminDashboard = () => {
       fetchData();
     } catch (err) {
       setError(err.response?.data?.error || 'Failed to assign role');
+    }
+  };
+
+  const handleDeleteDepartment = async (id) => {
+    if (!window.confirm('Are you sure you want to delete this department?')) return;
+    
+    try {
+      await api.delete(`/departments/${id}`);
+      setSuccess('Department deleted successfully');
+      fetchData();
+    } catch (err) {
+      setError(err.response?.data?.error || 'Failed to delete department');
+    }
+  };
+
+  const handleDeleteLeaveType = async (id) => {
+    if (!window.confirm('Are you sure you want to delete this leave type?')) return;
+    
+    try {
+      await api.delete(`/leave-types/${id}`);
+      setSuccess('Leave type deleted successfully');
+      fetchData();
+    } catch (err) {
+      setError(err.response?.data?.error || 'Failed to delete leave type');
     }
   };
 
@@ -442,6 +468,7 @@ const AdminDashboard = () => {
                           <th>Name</th>
                           <th>Manager</th>
                           <th>Employees</th>
+                          {hasPermission('delete department') && <th>Actions</th>}
                         </tr>
                       </thead>
                       <tbody>
@@ -450,6 +477,16 @@ const AdminDashboard = () => {
                             <td>{dept.name}</td>
                             <td>{dept.manager?.name || 'No manager'}</td>
                             <td>{dept.users?.length || 0}</td>
+                            {hasPermission('delete department') && (
+                              <td>
+                                <button
+                                  className="btn btn-danger btn-sm"
+                                  onClick={() => handleDeleteDepartment(dept.id)}
+                                >
+                                  Delete
+                                </button>
+                              </td>
+                            )}
                           </tr>
                         ))}
                       </tbody>
@@ -466,6 +503,7 @@ const AdminDashboard = () => {
                           <th>Default Quota</th>
                           <th>Max Consecutive Days</th>
                           <th>Total Requests</th>
+                          {hasPermission('delete leave type') && <th>Actions</th>}
                         </tr>
                       </thead>
                       <tbody>
@@ -475,6 +513,16 @@ const AdminDashboard = () => {
                             <td>{type.default_quota} days</td>
                             <td>{type.max_consecutive_days} days</td>
                             <td>{type.leaves_count || 0}</td>
+                            {hasPermission('delete leave type') && (
+                              <td>
+                                <button
+                                  className="btn btn-danger btn-sm"
+                                  onClick={() => handleDeleteLeaveType(type.id)}
+                                >
+                                  Delete
+                                </button>
+                              </td>
+                            )}
                           </tr>
                         ))}
                       </tbody>
