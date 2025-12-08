@@ -11,6 +11,7 @@ const EmployeeDashboard = () => {
   const [activeTab, setActiveTab] = useState(() => {
     // Set initial tab based on permissions
     if (hasPermission('view leaves')) return 'leaves';
+    if (hasPermission('view users')) return 'users';
     if (hasPermission('view departments')) return 'departments';
     if (hasPermission('view leave types')) return 'leaveTypes';
     return 'leaves';
@@ -18,6 +19,7 @@ const EmployeeDashboard = () => {
   const [leaves, setLeaves] = useState([]);
   const [leaveTypes, setLeaveTypes] = useState([]);
   const [departments, setDepartments] = useState([]);
+  const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
   const [formData, setFormData] = useState({
@@ -44,6 +46,9 @@ const EmployeeDashboard = () => {
         ]);
         setLeaves(leavesData);
         setLeaveTypes(typesData);
+      } else if (activeTab === 'users' && hasPermission('view users')) {
+        const response = await api.get('/users');
+        setUsers(response.data);
       } else if (activeTab === 'departments' && hasPermission('view departments')) {
         const response = await api.get('/departments');
         setDepartments(response.data);
@@ -132,6 +137,20 @@ const EmployeeDashboard = () => {
     }
   };
 
+  const handleDeleteUser = async (id) => {
+    if (!window.confirm('Are you sure you want to delete this user?')) {
+      return;
+    }
+
+    try {
+      await api.delete(`/users/${id}`);
+      setSuccess('User deleted successfully');
+      fetchData();
+    } catch (err) {
+      setError(err.response?.data?.error || 'Failed to delete user');
+    }
+  };
+
   const getStatusClass = (status) => {
     return `status-badge status-${status}`;
   };
@@ -165,6 +184,14 @@ const EmployeeDashboard = () => {
                 onClick={() => setActiveTab('leaves')}
               >
                 My Leaves
+              </button>
+            )}
+            {hasPermission('view users') && (
+              <button
+                className={`tab ${activeTab === 'users' ? 'active' : ''}`}
+                onClick={() => setActiveTab('users')}
+              >
+                Users
               </button>
             )}
             {hasPermission('view departments') && (
@@ -340,6 +367,58 @@ const EmployeeDashboard = () => {
                 </div>
               </div>
             </>
+          )}
+
+          {/* Users Tab */}
+          {activeTab === 'users' && hasPermission('view users') && (
+            <div className="card">
+              <h3>Users</h3>
+              <div className="leaves-table">
+                {users.length === 0 ? (
+                  <div className="empty-state">
+                    <p>No users found</p>
+                  </div>
+                ) : (
+                  <table>
+                    <thead>
+                      <tr>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Role</th>
+                        <th>Department</th>
+                        {hasPermission('delete user') && <th>Actions</th>}
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {users.map((user) => (
+                        <tr key={user.id}>
+                          <td>{user.name}</td>
+                          <td>{user.email}</td>
+                          <td>
+                            <span className="status-badge">
+                              {user.roles && user.roles.length > 0
+                                ? user.roles.map(r => r.name).join(', ')
+                                : user.role}
+                            </span>
+                          </td>
+                          <td>{user.department?.name || '-'}</td>
+                          {hasPermission('delete user') && (
+                            <td>
+                              <button
+                                className="btn btn-danger btn-sm"
+                                onClick={() => handleDeleteUser(user.id)}
+                              >
+                                Delete
+                              </button>
+                            </td>
+                          )}
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                )}
+              </div>
+            </div>
           )}
 
           {/* Departments Tab */}
