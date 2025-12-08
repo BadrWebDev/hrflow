@@ -26,10 +26,16 @@ class UserController extends Controller
     }
 
     /**
-     * Create a new user/employee (admin only)
+     * Create a new user/employee
      */
     public function store(Request $request)
     {
+        $user = Auth::user();
+        
+        if (!$user->hasPermissionTo('create user')) {
+            return response()->json(['error' => 'You do not have permission to create users'], 403);
+        }
+
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
@@ -77,19 +83,19 @@ class UserController extends Controller
         $user = Auth::user();
         $targetUser = User::findOrFail($id);
 
-        // Employees can only update their own limited fields
-        if ($user->role !== 'admin' && $user->id != $id) {
-            return response()->json(['error' => 'Unauthorized'], 403);
+        // Check permission for editing other users
+        if ($user->id != $id && !$user->hasPermissionTo('edit user')) {
+            return response()->json(['error' => 'You do not have permission to edit users'], 403);
         }
 
         $rules = [];
         
-        if ($user->role === 'admin') {
-            // Admin can update everything
+        if ($user->hasPermissionTo('edit user') || $user->role === 'admin') {
+            // Admin/permission holders can update everything
             $rules = [
                 'name' => 'sometimes|required|string|max:255',
                 'email' => 'sometimes|required|string|email|max:255|unique:users,email,' . $id,
-                'password' => 'sometimes|required|string|min:8',
+                'password' => 'sometimes|nullable|string|min:8',
                 'role' => 'sometimes|required|in:employee,admin',
                 'department_id' => 'nullable|exists:departments,id',
             ];
@@ -97,7 +103,7 @@ class UserController extends Controller
             // Employee can only update name and password
             $rules = [
                 'name' => 'sometimes|required|string|max:255',
-                'password' => 'sometimes|required|string|min:8',
+                'password' => 'sometimes|nullable|string|min:8',
             ];
         }
 
@@ -113,11 +119,11 @@ class UserController extends Controller
             $updateData['name'] = $request->name;
         }
         
-        if ($request->has('password')) {
+        if ($request->filled('password')) {
             $updateData['password'] = Hash::make($request->password);
         }
 
-        if ($user->role === 'admin') {
+        if ($user->hasPermissionTo('edit user') || $user->role === 'admin') {
             if ($request->has('email')) {
                 $updateData['email'] = $request->email;
             }

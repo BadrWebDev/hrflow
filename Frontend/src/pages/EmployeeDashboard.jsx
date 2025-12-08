@@ -22,6 +22,15 @@ const EmployeeDashboard = () => {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
+  const [showUserForm, setShowUserForm] = useState(false);
+  const [editingUser, setEditingUser] = useState(null);
+  const [userFormData, setUserFormData] = useState({
+    name: '',
+    email: '',
+    password: '',
+    role: 'employee',
+    department_id: '',
+  });
   const [formData, setFormData] = useState({
     leave_type_id: '',
     start_date: '',
@@ -47,8 +56,12 @@ const EmployeeDashboard = () => {
         setLeaves(leavesData);
         setLeaveTypes(typesData);
       } else if (activeTab === 'users' && hasPermission('view users')) {
-        const response = await api.get('/users');
-        setUsers(response.data);
+        const [usersData, deptsData] = await Promise.all([
+          api.get('/users'),
+          api.get('/departments'),
+        ]);
+        setUsers(usersData.data);
+        setDepartments(deptsData.data);
       } else if (activeTab === 'departments' && hasPermission('view departments')) {
         const response = await api.get('/departments');
         setDepartments(response.data);
@@ -149,6 +162,71 @@ const EmployeeDashboard = () => {
     } catch (err) {
       setError(err.response?.data?.error || 'Failed to delete user');
     }
+  };
+
+  const handleUserFormSubmit = async (e) => {
+    e.preventDefault();
+    setError('');
+    setSuccess('');
+
+    try {
+      if (editingUser) {
+        // Update user
+        const updateData = { ...userFormData };
+        if (!updateData.password) {
+          delete updateData.password; // Don't update password if empty
+        }
+        await api.put(`/users/${editingUser.id}`, updateData);
+        setSuccess('User updated successfully');
+      } else {
+        // Create user
+        await api.post('/users', userFormData);
+        setSuccess('User created successfully');
+      }
+      setShowUserForm(false);
+      setEditingUser(null);
+      setUserFormData({
+        name: '',
+        email: '',
+        password: '',
+        role: 'employee',
+        department_id: '',
+      });
+      fetchData();
+    } catch (err) {
+      const errorMsg = err.response?.data?.error || err.response?.data?.message || 'Failed to save user';
+      const validationErrors = err.response?.data?.errors;
+      if (validationErrors) {
+        const firstError = Object.values(validationErrors)[0][0];
+        setError(firstError);
+      } else {
+        setError(errorMsg);
+      }
+    }
+  };
+
+  const handleEditUser = (user) => {
+    setEditingUser(user);
+    setUserFormData({
+      name: user.name,
+      email: user.email,
+      password: '',
+      role: user.role,
+      department_id: user.department_id || '',
+    });
+    setShowUserForm(true);
+  };
+
+  const handleCloseUserForm = () => {
+    setShowUserForm(false);
+    setEditingUser(null);
+    setUserFormData({
+      name: '',
+      email: '',
+      password: '',
+      role: 'employee',
+      department_id: '',
+    });
   };
 
   const getStatusClass = (status) => {
@@ -372,7 +450,91 @@ const EmployeeDashboard = () => {
           {/* Users Tab */}
           {activeTab === 'users' && hasPermission('view users') && (
             <div className="card">
-              <h3>Users</h3>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+                <h3>Users</h3>
+                {hasPermission('create user') && (
+                  <button
+                    className="btn btn-primary"
+                    onClick={() => setShowUserForm(!showUserForm)}
+                  >
+                    {showUserForm ? 'Cancel' : 'Create User'}
+                  </button>
+                )}
+              </div>
+
+              {showUserForm && hasPermission('create user') && (
+                <form onSubmit={handleUserFormSubmit} className="leave-form" style={{ marginBottom: '20px' }}>
+                  <div className="form-row">
+                    <div className="form-group">
+                      <label>Name</label>
+                      <input
+                        type="text"
+                        value={userFormData.name}
+                        onChange={(e) => setUserFormData({ ...userFormData, name: e.target.value })}
+                        required
+                      />
+                    </div>
+                    <div className="form-group">
+                      <label>Email</label>
+                      <input
+                        type="email"
+                        value={userFormData.email}
+                        onChange={(e) => setUserFormData({ ...userFormData, email: e.target.value })}
+                        required
+                      />
+                    </div>
+                  </div>
+
+                  <div className="form-row">
+                    <div className="form-group">
+                      <label>Password {editingUser && '(leave blank to keep current)'}</label>
+                      <input
+                        type="password"
+                        value={userFormData.password}
+                        onChange={(e) => setUserFormData({ ...userFormData, password: e.target.value })}
+                        required={!editingUser}
+                        placeholder={editingUser ? 'Leave blank to keep current' : ''}
+                      />
+                    </div>
+                    <div className="form-group">
+                      <label>Role</label>
+                      <select
+                        value={userFormData.role}
+                        onChange={(e) => setUserFormData({ ...userFormData, role: e.target.value })}
+                        required
+                      >
+                        <option value="employee">Employee</option>
+                        <option value="admin">Admin</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <div className="form-group">
+                    <label>Department</label>
+                    <select
+                      value={userFormData.department_id}
+                      onChange={(e) => setUserFormData({ ...userFormData, department_id: e.target.value })}
+                    >
+                      <option value="">No Department</option>
+                      {departments.map((dept) => (
+                        <option key={dept.id} value={dept.id}>
+                          {dept.name}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div style={{ display: 'flex', gap: '10px' }}>
+                    <button type="submit" className="btn btn-success">
+                      {editingUser ? 'Update User' : 'Create User'}
+                    </button>
+                    <button type="button" className="btn btn-secondary" onClick={handleCloseUserForm}>
+                      Cancel
+                    </button>
+                  </div>
+                </form>
+              )}
+
               <div className="leaves-table">
                 {users.length === 0 ? (
                   <div className="empty-state">
@@ -386,7 +548,7 @@ const EmployeeDashboard = () => {
                         <th>Email</th>
                         <th>Role</th>
                         <th>Department</th>
-                        {hasPermission('delete user') && <th>Actions</th>}
+                        {(hasPermission('edit user') || hasPermission('delete user')) && <th>Actions</th>}
                       </tr>
                     </thead>
                     <tbody>
@@ -402,14 +564,26 @@ const EmployeeDashboard = () => {
                             </span>
                           </td>
                           <td>{user.department?.name || '-'}</td>
-                          {hasPermission('delete user') && (
+                          {(hasPermission('edit user') || hasPermission('delete user')) && (
                             <td>
-                              <button
-                                className="btn btn-danger btn-sm"
-                                onClick={() => handleDeleteUser(user.id)}
-                              >
-                                Delete
-                              </button>
+                              <div style={{ display: 'flex', gap: '5px' }}>
+                                {hasPermission('edit user') && (
+                                  <button
+                                    className="btn btn-primary btn-sm"
+                                    onClick={() => handleEditUser(user)}
+                                  >
+                                    Edit
+                                  </button>
+                                )}
+                                {hasPermission('delete user') && (
+                                  <button
+                                    className="btn btn-danger btn-sm"
+                                    onClick={() => handleDeleteUser(user.id)}
+                                  >
+                                    Delete
+                                  </button>
+                                )}
+                              </div>
                             </td>
                           )}
                         </tr>
