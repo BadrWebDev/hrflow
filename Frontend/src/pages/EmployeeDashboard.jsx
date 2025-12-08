@@ -8,7 +8,13 @@ import './Dashboard.css';
 
 const EmployeeDashboard = () => {
   const { hasPermission } = useAuth();
-  const [activeTab, setActiveTab] = useState('leaves');
+  const [activeTab, setActiveTab] = useState(() => {
+    // Set initial tab based on permissions
+    if (hasPermission('view leaves')) return 'leaves';
+    if (hasPermission('view departments')) return 'departments';
+    if (hasPermission('view leave types')) return 'leaveTypes';
+    return 'leaves';
+  });
   const [leaves, setLeaves] = useState([]);
   const [leaveTypes, setLeaveTypes] = useState([]);
   const [departments, setDepartments] = useState([]);
@@ -28,8 +34,10 @@ const EmployeeDashboard = () => {
   }, [activeTab]);
 
   const fetchData = async () => {
+    setLoading(true);
+    setError(''); // Clear previous errors
     try {
-      if (activeTab === 'leaves') {
+      if (activeTab === 'leaves' && hasPermission('view leaves')) {
         const [leavesData, typesData] = await Promise.all([
           leaveService.getLeaves(),
           leaveService.getLeaveTypes(),
