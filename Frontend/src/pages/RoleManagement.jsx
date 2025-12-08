@@ -115,12 +115,48 @@ const RoleManagement = () => {
       return;
     }
 
+    // Ensure view permissions are included with CRUD permissions
+    const permissionsToSubmit = [...formData.permissions];
+    const crudToViewMap = {
+      'create leave': 'view leaves',
+      'edit leave': 'view leaves',
+      'delete leave': 'view leaves',
+      'approve leave': 'view leaves',
+      'reject leave': 'view leaves',
+      'create user': 'view users',
+      'edit user': 'view users',
+      'delete user': 'view users',
+      'create department': 'view departments',
+      'edit department': 'view departments',
+      'delete department': 'view departments',
+      'create leave type': 'view leave types',
+      'edit leave type': 'view leave types',
+      'delete leave type': 'view leave types',
+      'create role': 'view roles',
+      'edit role': 'view roles',
+      'delete role': 'view roles',
+      'assign roles': 'view roles',
+      'export reports': 'view reports',
+    };
+
+    formData.permissions.forEach(permission => {
+      const viewPermission = crudToViewMap[permission];
+      if (viewPermission && !permissionsToSubmit.includes(viewPermission)) {
+        permissionsToSubmit.push(viewPermission);
+      }
+    });
+
     try {
+      const dataToSubmit = {
+        ...formData,
+        permissions: permissionsToSubmit
+      };
+
       if (editingRole) {
-        await roleService.updateRole(editingRole.id, formData);
+        await roleService.updateRole(editingRole.id, dataToSubmit);
         setSuccess('Role updated successfully!');
       } else {
-        await roleService.createRole(formData);
+        await roleService.createRole(dataToSubmit);
         setSuccess('Role created successfully!');
       }
       fetchData();
