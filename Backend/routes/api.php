@@ -37,6 +37,11 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/leave-types', [LeaveTypeController::class, 'index']);
     Route::get('/leave-types/{id}', [LeaveTypeController::class, 'show']);
 
+    // User management (permission-based)
+    Route::get('/users', [UserController::class, 'index']);
+    Route::post('/users', [UserController::class, 'store']);
+    Route::delete('/users/{id}', [UserController::class, 'destroy']);
+
     // Notification routes
     Route::get('/notifications', [NotificationController::class, 'index']);
     Route::get('/notifications/unread-count', [NotificationController::class, 'unreadCount']);
@@ -52,11 +57,6 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/departments', [DepartmentController::class, 'store']);
         Route::put('/departments/{id}', [DepartmentController::class, 'update']);
         Route::delete('/departments/{id}', [DepartmentController::class, 'destroy']);
-        
-        // User management
-        Route::get('/users', [UserController::class, 'index']);
-        Route::post('/users', [UserController::class, 'store']);
-        Route::delete('/users/{id}', [UserController::class, 'destroy']);
         
         // Leave Type management
         Route::post('/leave-types', [LeaveTypeController::class, 'store']);
