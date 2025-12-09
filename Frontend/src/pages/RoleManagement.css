@@ -10,18 +10,28 @@
   gap: var(--space-lg);
 }
 
-.dashboard-header > div {
-  display: flex;
-  align-items: center;
-  gap: var(--space-md);
+.dashboard-header-content {
+  flex: 1;
 }
 
-.dashboard-header h1 {
-  margin: 0;
+.dashboard-header-content h2 {
+  margin: 0 0 var(--space-xs) 0;
   font-size: 2rem;
   font-weight: 700;
   color: var(--color-text);
   letter-spacing: -0.02em;
+}
+
+.dashboard-header-content p {
+  margin: 0;
+  color: var(--color-text-muted);
+  font-size: 1rem;
+}
+
+.header-actions {
+  display: flex;
+  gap: var(--space-md);
+  align-items: center;
 }
 
 /* Roles Grid */
@@ -148,7 +158,7 @@
   margin-top: auto;
 }
 
-.role-actions button {
+.role-actions .btn-sm {
   flex: 1;
   padding: 0.625rem 1rem;
   font-size: 0.875rem;

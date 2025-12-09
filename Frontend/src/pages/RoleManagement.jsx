@@ -213,122 +213,150 @@ const RoleManagement = () => {
     <>
       <Navbar />
       <div className="dashboard-container">
-        <div className="dashboard-header">
-          <div>
-            <button className="btn-secondary" onClick={() => navigate('/dashboard')} style={{ marginRight: '12px' }}>
-              ← Back
-            </button>
-            <h1 style={{ display: 'inline' }}>Role Management</h1>
-          </div>
-          <button className="btn-primary" onClick={() => handleOpenModal()}>
-            + Create Role
-          </button>
-        </div>
-
-        {error && <div className="error-message">{error}</div>}
-        {success && <div className="success-message">{success}</div>}
-
-        <div className="roles-grid">
-          {roles.map((role) => (
-            <div key={role.id} className={`role-card ${isSystemRole(role.name) ? 'system-role' : ''}`}>
-              <div className="role-header">
-                <h3>{role.name}</h3>
-                {isSystemRole(role.name) && <span className="system-badge">System</span>}
-              </div>
-              <div className="role-body">
-                <p className="permission-count">
-                  {role.permissions.length} permission{role.permissions.length !== 1 ? 's' : ''}
-                </p>
-                <div className="permission-list">
-                  {role.permissions.slice(0, 5).map((perm) => (
-                    <span key={perm.id} className="permission-tag">
-                      {perm.name}
-                    </span>
-                  ))}
-                  {role.permissions.length > 5 && (
-                    <span className="permission-tag more">
-                      +{role.permissions.length - 5} more
-                    </span>
-                  )}
-                </div>
-              </div>
-              <div className="role-actions">
-                <button
-                  className="btn-secondary"
-                  onClick={() => handleOpenModal(role)}
-                  disabled={isSystemRole(role.name)}
-                >
-                  Edit
-                </button>
-                <button
-                  className="btn-danger"
-                  onClick={() => handleDelete(role.id, role.name)}
-                  disabled={isSystemRole(role.name)}
-                >
-                  Delete
-                </button>
-              </div>
+        <div className="dashboard-content">
+          <div className="dashboard-header">
+            <div className="dashboard-header-content">
+              <h2>Role Management</h2>
+              <p>Create and manage user roles and permissions</p>
             </div>
-          ))}
-        </div>
+            <div className="header-actions">
+              <button className="btn-secondary" onClick={() => navigate('/dashboard')}>
+                ← Back
+              </button>
+              <button className="btn-primary" onClick={() => handleOpenModal()}>
+                + Create Role
+              </button>
+            </div>
+          </div>
 
-        {/* Modal */}
-        {showModal && (
-          <div className="modal-overlay" onClick={handleCloseModal}>
-            <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-              <div className="modal-header">
-                <h2>{editingRole ? 'Edit Role' : 'Create New Role'}</h2>
-                <button className="modal-close" onClick={handleCloseModal}>×</button>
-              </div>
+          {error && (
+            <div className="error-message">
+              <span className="error-icon">⚠️</span>
+              <span>{error}</span>
+            </div>
+          )}
+          {success && (
+            <div className="success-message">
+              <span className="success-icon">✓</span>
+              <span>{success}</span>
+            </div>
+          )}
 
-              <form onSubmit={handleSubmit}>
-                <div className="form-group">
-                  <label>Role Name</label>
-                  <input
-                    type="text"
-                    value={formData.name}
-                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                    placeholder="e.g., HR Manager"
-                    required
-                  />
+          <div className="roles-grid">
+            {roles.map((role) => (
+              <div key={role.id} className={`role-card ${isSystemRole(role.name) ? 'system-role' : ''}`}>
+                <div className="role-header">
+                  <h3>{role.name}</h3>
+                  {isSystemRole(role.name) && <span className="system-badge">System</span>}
                 </div>
-
-                <div className="form-group">
-                  <label>Permissions</label>
-                  <div className="permissions-grid">
-                    {Object.entries(permissions).map(([category, perms]) => (
-                      <div key={category} className="permission-category">
-                        <h4>{category.charAt(0).toUpperCase() + category.slice(1)}</h4>
-                        {perms.map((perm) => (
-                          <label key={perm.id} className="permission-checkbox">
-                            <input
-                              type="checkbox"
-                              checked={formData.permissions.includes(perm.name)}
-                              onChange={() => handlePermissionToggle(perm.name)}
-                            />
-                            <span>{perm.name}</span>
-                          </label>
-                        ))}
-                      </div>
+                <div className="role-body">
+                  <p className="permission-count">
+                    {role.permissions.length} permission{role.permissions.length !== 1 ? 's' : ''}
+                  </p>
+                  <div className="permission-list">
+                    {role.permissions.slice(0, 5).map((perm) => (
+                      <span key={perm.id} className="permission-tag">
+                        {perm.name}
+                      </span>
                     ))}
+                    {role.permissions.length > 5 && (
+                      <span className="permission-tag more">
+                        +{role.permissions.length - 5} more
+                      </span>
+                    )}
                   </div>
                 </div>
-
-                {error && <div className="error-message">{error}</div>}
-                {success && <div className="success-message">{success}</div>}
-
-                <div className="modal-actions">
-                  <button type="button" className="btn-secondary" onClick={handleCloseModal}>
-                    Cancel
+                <div className="role-actions">
+                  <button
+                    className="btn-secondary btn-sm"
+                    onClick={() => handleOpenModal(role)}
+                    disabled={isSystemRole(role.name)}
+                  >
+                    Edit
                   </button>
-                  <button type="submit" className="btn-primary">
-                    {editingRole ? 'Update Role' : 'Create Role'}
+                  <button
+                    className="btn-danger btn-sm"
+                    onClick={() => handleDelete(role.id, role.name)}
+                    disabled={isSystemRole(role.name)}
+                  >
+                    Delete
                   </button>
                 </div>
-              </form>
-            </div>
+              </div>
+            ))}
           </div>
-        )}
+
+          {/* Modal */}
+          {showModal && (
+            <div className="modal-overlay" onClick={handleCloseModal}>
+              <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+                <div className="modal-header">
+                  <h2>{editingRole ? 'Edit Role' : 'Create New Role'}</h2>
+                  <button className="close-button" onClick={handleCloseModal}>×</button>
+                </div>
+
+                <div className="modal-body">
+                  <form onSubmit={handleSubmit}>
+                    <div className="form-group">
+                      <label>Role Name</label>
+                      <input
+                        type="text"
+                        value={formData.name}
+                        onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                        placeholder="e.g., HR Manager"
+                        required
+                      />
+                    </div>
+
+                    <div className="form-group">
+                      <label>Permissions</label>
+                      <div className="permissions-grid">
+                        {Object.entries(permissions).map(([category, perms]) => (
+                          <div key={category} className="permission-section">
+                            <h4>{category.charAt(0).toUpperCase() + category.slice(1)}</h4>
+                            {perms.map((perm) => (
+                              <div key={perm.id} className="permission-item">
+                                <input
+                                  type="checkbox"
+                                  id={`perm-${perm.id}`}
+                                  checked={formData.permissions.includes(perm.name)}
+                                  onChange={() => handlePermissionToggle(perm.name)}
+                                />
+                                <label htmlFor={`perm-${perm.id}`}>{perm.name}</label>
+                              </div>
+                            ))}
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    {error && (
+                      <div className="error-message">
+                        <span className="error-icon">⚠️</span>
+                        <span>{error}</span>
+                      </div>
+                    )}
+                    {success && (
+                      <div className="success-message">
+                        <span className="success-icon">✓</span>
+                        <span>{success}</span>
+                      </div>
+                    )}
+
+                    <div className="form-actions">
+                      <button type="button" className="btn-secondary" onClick={handleCloseModal}>
+                        Cancel
+                      </button>
+                      <button type="submit" className="btn-primary">
+                        {editingRole ? 'Update Role' : 'Create Role'}
+                      </button>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
       </div>
     </>
   );
