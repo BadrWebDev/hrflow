@@ -20,6 +20,7 @@ const EmployeeDashboard = () => {
   const [leaveTypes, setLeaveTypes] = useState([]);
   const [departments, setDepartments] = useState([]);
   const [users, setUsers] = useState([]);
+  const [availableRoles, setAvailableRoles] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
   const [showUserForm, setShowUserForm] = useState(false);
@@ -43,6 +44,19 @@ const EmployeeDashboard = () => {
   useEffect(() => {
     fetchData();
   }, [activeTab]);
+
+  useEffect(() => {
+    fetchRoles();
+  }, []);
+
+  const fetchRoles = async () => {
+    try {
+      const response = await api.get('/roles');
+      setAvailableRoles(response.data);
+    } catch (err) {
+      console.error('Failed to load roles:', err);
+    }
+  };
 
   const fetchData = async () => {
     setLoading(true);
@@ -515,8 +529,12 @@ const EmployeeDashboard = () => {
                         onChange={(e) => setUserFormData({ ...userFormData, role: e.target.value })}
                         required
                       >
-                        <option value="employee">Employee</option>
-                        <option value="admin">Admin</option>
+                        <option value="">Select a role...</option>
+                        {availableRoles.map(role => (
+                          <option key={role.id} value={role.name}>
+                            {role.name.charAt(0).toUpperCase() + role.name.slice(1)}
+                          </option>
+                        ))}
                       </select>
                     </div>
                   </div>
