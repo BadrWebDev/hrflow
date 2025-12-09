@@ -40,7 +40,7 @@ class UserController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:8',
-            'role' => 'required|in:employee,admin',
+            'role' => 'required|exists:roles,name',
             'department_id' => 'nullable|exists:departments,id',
         ]);
 
@@ -99,7 +99,7 @@ class UserController extends Controller
                 'name' => 'sometimes|required|string|max:255',
                 'email' => 'sometimes|required|string|email|max:255|unique:users,email,' . $id,
                 'password' => 'sometimes|nullable|string|min:8',
-                'role' => 'sometimes|required|in:employee,admin',
+                'role' => 'sometimes|required|exists:roles,name',
                 'department_id' => 'nullable|exists:departments,id',
             ];
         } else {
