@@ -32,7 +32,7 @@ COPY --chown=www-data:www-data . /var/www
 # Install dependencies
 RUN composer install --no-dev --optimize-autoloader --no-interaction
 
-# Configure nginx
+# Copy nginx configuration
 COPY nginx.conf /etc/nginx/sites-available/default
 
 # Set permissions
@@ -43,7 +43,7 @@ RUN chown -R www-data:www-data /var/www \
 # Expose port
 EXPOSE 8080
 
-# Start script
+# Copy and set up start script
 COPY docker-start.sh /usr/local/bin/start
 RUN chmod +x /usr/local/bin/start
 
