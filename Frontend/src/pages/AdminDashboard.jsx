@@ -33,6 +33,7 @@ const AdminDashboard = () => {
 
   useEffect(() => {
     fetchRoles();
+    fetchAllStats();
   }, []);
 
   const fetchRoles = async () => {
@@ -41,6 +42,23 @@ const AdminDashboard = () => {
       setAvailableRoles(response.data);
     } catch (err) {
       console.error('Failed to load roles:', err);
+    }
+  };
+
+  const fetchAllStats = async () => {
+    try {
+      const [leavesData, usersData, depsData, typesData] = await Promise.all([
+        leaveService.getLeaves(),
+        api.get('/users'),
+        api.get('/departments'),
+        leaveService.getLeaveTypes()
+      ]);
+      setLeaves(leavesData);
+      setUsers(usersData.data);
+      setDepartments(depsData.data);
+      setLeaveTypes(typesData);
+    } catch (err) {
+      console.error('Failed to load stats:', err);
     }
   };
 
@@ -551,41 +569,56 @@ const AdminDashboard = () => {
       {/* Role Assignment Modal */}
       {showRoleModal && (
         <div className="modal-overlay" onClick={() => setShowRoleModal(false)}>
-          <div className="modal-content" onClick={(e) => e.stopPropagation()} style={{maxWidth: '400px'}}>
-            <h2>Assign Role to {selectedUser?.name}</h2>
-            
-            {error && <div className="error-message">{error}</div>}
-            {success && <div className="success-message">{success}</div>}
-
-            <div className="form-group">
-              <label>Select Role</label>
-              <select 
-                value={selectedRole} 
-                onChange={(e) => setSelectedRole(e.target.value)}
-                className="form-control"
-              >
-                <option value="">Choose a role...</option>
-                {availableRoles.map(role => (
-                  <option key={role.id} value={role.name}>
-                    {role.name} ({role.permissions.length} permissions)
-                  </option>
-                ))}
-              </select>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()} style={{maxWidth: '500px'}}>
+            <div className="modal-header">
+              <h2>Assign Role to {selectedUser?.name}</h2>
+              <button className="close-button" onClick={() => setShowRoleModal(false)}>×</button>
             </div>
 
-            <div className="modal-actions" style={{display: 'flex', gap: '10px', marginTop: '20px'}}>
-              <button 
-                className="btn btn-secondary" 
-                onClick={() => setShowRoleModal(false)}
-              >
-                Cancel
-              </button>
-              <button 
-                className="btn btn-primary" 
-                onClick={handleRoleSubmit}
-              >
-                Assign Role
-              </button>
+            <div className="modal-body">
+              {error && (
+                <div className="error-message">
+                  <span className="error-icon">⚠️</span>
+                  <span>{error}</span>
+                </div>
+              )}
+              {success && (
+                <div className="success-message">
+                  <span className="success-icon">✓</span>
+                  <span>{success}</span>
+                </div>
+              )}
+
+              <div className="form-group">
+                <label>Select Role</label>
+                <select 
+                  value={selectedRole} 
+                  onChange={(e) => setSelectedRole(e.target.value)}
+                  className="form-control"
+                >
+                  <option value="">Choose a role...</option>
+                  {availableRoles.map(role => (
+                    <option key={role.id} value={role.name}>
+                      {role.name} ({role.permissions.length} permissions)
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="form-actions">
+                <button 
+                  className="btn btn-secondary" 
+                  onClick={() => setShowRoleModal(false)}
+                >
+                  Cancel
+                </button>
+                <button 
+                  className="btn btn-primary" 
+                  onClick={handleRoleSubmit}
+                >
+                  Assign Role
+                </button>
+              </div>
             </div>
           </div>
         </div>

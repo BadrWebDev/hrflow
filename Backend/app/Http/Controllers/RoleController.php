@@ -51,10 +51,43 @@ class RoleController extends Controller
         ]);
         
         if ($request->has('permissions')) {
-            $role->givePermissionTo($request->permissions);
+            $permissions = $this->addDependentPermissions($request->permissions);
+            $role->givePermissionTo($permissions);
         }
 
         return response()->json($role->load('permissions'), 201);
+    }
+
+    /**
+     * Add dependent permissions automatically
+     */
+    private function addDependentPermissions($permissions)
+    {
+        $dependencyMap = [
+            'create user' => ['view users', 'view departments', 'view roles'],
+            'edit user' => ['view users', 'view departments', 'view roles'],
+            'create department' => ['view departments'],
+            'edit department' => ['view departments'],
+            'create leave type' => ['view leave types'],
+            'edit leave type' => ['view leave types'],
+            'create role' => ['view roles'],
+            'edit role' => ['view roles'],
+            'assign roles' => ['view roles', 'view users'],
+        ];
+
+        $allPermissions = collect($permissions);
+        
+        foreach ($permissions as $permission) {
+            if (isset($dependencyMap[$permission])) {
+                foreach ($dependencyMap[$permission] as $dependent) {
+                    if (!$allPermissions->contains($dependent)) {
+                        $allPermissions->push($dependent);
+                    }
+                }
+            }
+        }
+
+        return $allPermissions->toArray();
     }
 
     /**
@@ -82,7 +115,8 @@ class RoleController extends Controller
         $role->update(['name' => $request->name]);
         
         if ($request->has('permissions')) {
-            $role->syncPermissions($request->permissions);
+            $permissions = $this->addDependentPermissions($request->permissions);
+            $role->syncPermissions($permissions);
         }
 
         return response()->json($role->load('permissions'));
