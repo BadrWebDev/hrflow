@@ -36,19 +36,20 @@ Built on Laravel 11 and React 19, HRFlow implements industry best practices incl
 | **RBAC System** | Dynamic roles with 25+ granular permissions and auto-dependency resolution |
 | **Email Notifications** | Automated email alerts for leave approvals, rejections, and status updates |
 | **In-App Notifications** | Real-time notification system with unread badges and notification center |
-| **Data Export** | Export capabilities for Excel, CSV, and PDF formats |
+| **Advanced Reporting** | Generate monthly summaries, date-range reports, and export data in multiple formats |
+| **Data Export** | Export users, leaves, and reports in Excel, CSV, and PDF formats |
 | **Bulk Operations** | Batch processing for leave approvals and administrative tasks |
 
 ### Advanced Capabilities
 
 - **Smart Permission Dependencies**: Automatically grant prerequisite permissions (e.g., "create user" implies "view users", "view departments")
 - **Email Integration**: Automatic email notifications sent via Laravel Mail when leave requests are approved/rejected
+- **Comprehensive Reporting**: Monthly summary PDFs, date-range leave reports, and customizable data exports
+- **Flexible Data Export**: Download employee data, leave records filtered by date range, and monthly summaries in Excel, CSV, or PDF
 - **Glassmorphic UI**: Modern design system with 70+ CSS variables and smooth animations
 - **Responsive Design**: Mobile-first approach with cross-device compatibility
 - **RESTful API**: Clean, documented API architecture for seamless integrations
 - **Token Authentication**: Stateless authentication via Laravel Sanctum
-- ✅ Export data (Excel, CSV, PDF)
-- ✅ View comprehensive dashboard analytics
 
 ---
 
@@ -342,6 +343,21 @@ npm run build
 **Leave Request Process:**
 - **Employee**: Submit → Select type/dates → Add reason → Await approval
 - **Manager**: Review → Approve/Reject → Add comments → Employee notified
+
+**Export & Reporting:**
+1. Click "📊 Export & Reports" button
+2. Choose export type:
+   - **Employee Data**: Download all users in Excel or CSV
+   - **Leave Data**: Export leaves with optional date range filtering
+   - **Monthly Reports**: Generate PDF summary for specific month
+3. Select filters (date range or month)
+4. System generates and downloads report instantly
+
+**Available Reports:**
+- **Users Excel/CSV**: Complete employee directory with departments
+- **Leaves Excel/CSV**: Leave records with date range filtering
+- **Leave Report PDF**: Formatted report with statistics and leave details
+- **Monthly Summary PDF**: Comprehensive monthly overview with charts and insights
 
 ### Configuration
 
