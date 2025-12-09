@@ -36,12 +36,19 @@ RUN composer install --no-dev --optimize-autoloader --no-interaction
 # Copy nginx configuration from root
 COPY nginx.conf /etc/nginx/sites-available/default
 
+# Enable the site and remove default
+RUN ln -sf /etc/nginx/sites-available/default /etc/nginx/sites-enabled/default \
+    && rm -f /etc/nginx/sites-enabled/default
+
+# Copy nginx config directly to conf.d
+COPY nginx.conf /etc/nginx/conf.d/default.conf
+
 # Set permissions
 RUN chown -R www-data:www-data /var/www \
     && chmod -R 755 /var/www/storage \
     && chmod -R 755 /var/www/bootstrap/cache
 
-# Expose port
+# Expose port (Railway will use PORT env variable)
 EXPOSE 8080
 
 # Copy and set up start script from root

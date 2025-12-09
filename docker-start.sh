@@ -12,8 +12,8 @@ php artisan view:cache
 PORT=${PORT:-8080}
 echo "Using PORT: $PORT"
 
-# Update nginx configuration
-sed -i "s/listen 8080/listen $PORT/g" /etc/nginx/sites-available/default
+# Update nginx configuration in conf.d
+sed -i "s/listen 8080/listen $PORT/g" /etc/nginx/conf.d/default.conf
 
 # Test nginx configuration
 nginx -t
