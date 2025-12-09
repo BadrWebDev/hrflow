@@ -45,7 +45,10 @@ class RoleController extends Controller
             return response()->json(['errors' => $validator->errors()], 422);
         }
 
-        $role = Role::create(['name' => $request->name]);
+        $role = Role::create([
+            'name' => $request->name,
+            'guard_name' => 'web'
+        ]);
         
         if ($request->has('permissions')) {
             $role->givePermissionTo($request->permissions);
