@@ -65,12 +65,19 @@ const EmployeeDashboard = () => {
     setError(''); // Clear previous errors
     try {
       if (activeTab === 'leaves' && hasPermission('view leaves')) {
-        const [leavesData, typesData] = await Promise.all([
-          leaveService.getLeaves(),
-          leaveService.getLeaveTypes(),
-        ]);
+        const leavesData = await leaveService.getLeaves();
         setLeaves(leavesData);
-        setLeaveTypes(typesData);
+        
+        // Only fetch leave types if user has permission
+        if (hasPermission('view leave types') || hasPermission('create leave')) {
+          try {
+            const typesData = await leaveService.getLeaveTypes();
+            setLeaveTypes(typesData);
+          } catch (err) {
+            // Silently fail if user doesn't have permission to view leave types
+            console.log('Cannot fetch leave types:', err.response?.data?.error);
+          }
+        }
       } else if (activeTab === 'users' && hasPermission('view users')) {
         const [usersData, deptsData] = await Promise.all([
           api.get('/users'),
@@ -84,6 +91,17 @@ const EmployeeDashboard = () => {
       } else if (activeTab === 'leaveTypes' && hasPermission('view leave types')) {
         const typesData = await leaveService.getLeaveTypes();
         setLeaveTypes(typesData);
+      } else {
+        // If user doesn't have permission for current tab, redirect to a tab they have access to
+        if (hasPermission('view leaves')) {
+          setActiveTab('leaves');
+        } else if (hasPermission('view users')) {
+          setActiveTab('users');
+        } else if (hasPermission('view departments')) {
+          setActiveTab('departments');
+        } else if (hasPermission('view leave types')) {
+          setActiveTab('leaveTypes');
+        }
       }
     } catch (err) {
       if (err.response?.data?.error) {
@@ -322,7 +340,7 @@ const EmployeeDashboard = () => {
           )}
 
           {/* Leaves Tab */}
-          {activeTab === 'leaves' && (
+          {activeTab === 'leaves' && hasPermission('view leaves') && (
             <>
               <div className="stats-grid">
                 <div className="stat-card">
