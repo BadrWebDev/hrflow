@@ -52,9 +52,11 @@ const EmployeeDashboard = () => {
   const fetchRoles = async () => {
     try {
       const response = await api.get('/roles');
+      console.log('Fetched roles:', response.data);
       setAvailableRoles(response.data);
     } catch (err) {
       console.error('Failed to load roles:', err);
+      console.error('Error details:', err.response?.data);
     }
   };
 
