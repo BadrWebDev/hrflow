@@ -49,74 +49,122 @@ const Register = () => {
 
   return (
     <div className="auth-container">
-      <div className="auth-card">
-        <h2>Create Account</h2>
-        <p className="auth-subtitle">Join HRFlow to manage your leaves</p>
+      <div className="auth-content">
+        <div className="auth-brand">
+          <div className="brand-logo">
+            <span className="logo-icon">🌐</span>
+            <span className="logo-text">HRFlow</span>
+          </div>
+          <h1 className="brand-title">Join HRFlow</h1>
+          <p className="brand-subtitle">Create your account and start managing your leave requests with ease. Join thousands of professionals already using HRFlow.</p>
+        </div>
 
-        {error && <div className="error-message">{error}</div>}
-
-        <form onSubmit={handleSubmit}>
-          <div className="form-group">
-            <label htmlFor="name">Full Name</label>
-            <input
-              type="text"
-              id="name"
-              name="name"
-              value={formData.name}
-              onChange={handleChange}
-              required
-              placeholder="John Doe"
-            />
+        <div className="auth-card">
+          <div className="card-header">
+            <h2>Create Account</h2>
+            <p>Fill in your details to get started</p>
           </div>
 
-          <div className="form-group">
-            <label htmlFor="email">Email</label>
-            <input
-              type="email"
-              id="email"
-              name="email"
-              value={formData.email}
-              onChange={handleChange}
-              required
-              placeholder="your@email.com"
-            />
+          {error && (
+            <div className="error-message">
+              <span className="error-icon">⚠️</span>
+              <span>{error}</span>
+            </div>
+          )}
+
+          <form onSubmit={handleSubmit} className="auth-form">
+            <div className="form-group">
+              <label htmlFor="name">
+                <span className="label-icon">👤</span>
+                Full Name
+              </label>
+              <input
+                type="text"
+                id="name"
+                name="name"
+                value={formData.name}
+                onChange={handleChange}
+                required
+                placeholder="John Doe"
+                autoComplete="name"
+              />
+            </div>
+
+            <div className="form-group">
+              <label htmlFor="email">
+                <span className="label-icon">📧</span>
+                Email Address
+              </label>
+              <input
+                type="email"
+                id="email"
+                name="email"
+                value={formData.email}
+                onChange={handleChange}
+                required
+                placeholder="your@email.com"
+                autoComplete="email"
+              />
+            </div>
+
+            <div className="form-group">
+              <label htmlFor="password">
+                <span className="label-icon">🔒</span>
+                Password
+              </label>
+              <input
+                type="password"
+                id="password"
+                name="password"
+                value={formData.password}
+                onChange={handleChange}
+                required
+                minLength="8"
+                placeholder="Minimum 8 characters"
+                autoComplete="new-password"
+              />
+            </div>
+
+            <div className="form-group">
+              <label htmlFor="password_confirmation">
+                <span className="label-icon">🔐</span>
+                Confirm Password
+              </label>
+              <input
+                type="password"
+                id="password_confirmation"
+                name="password_confirmation"
+                value={formData.password_confirmation}
+                onChange={handleChange}
+                required
+                placeholder="Re-enter your password"
+                autoComplete="new-password"
+              />
+            </div>
+
+            <button type="submit" className="btn-primary btn-large" disabled={loading}>
+              {loading ? (
+                <>
+                  <span className="btn-spinner"></span>
+                  Creating account...
+                </>
+              ) : (
+                <>
+                  Create Account
+                  <span className="btn-arrow">→</span>
+                </>
+              )}
+            </button>
+          </form>
+
+          <div className="auth-divider">
+            <span>Already have an account?</span>
           </div>
 
-          <div className="form-group">
-            <label htmlFor="password">Password</label>
-            <input
-              type="password"
-              id="password"
-              name="password"
-              value={formData.password}
-              onChange={handleChange}
-              required
-              minLength="8"
-              placeholder="Minimum 8 characters"
-            />
-          </div>
-
-          <div className="form-group">
-            <label htmlFor="password_confirmation">Confirm Password</label>
-            <input
-              type="password"
-              id="password_confirmation"
-              name="password_confirmation"
-              value={formData.password_confirmation}
-              onChange={handleChange}
-              required
-              placeholder="Re-enter password"
-            />
-          </div>
-
-          <button type="submit" className="btn-primary" disabled={loading}>
-            {loading ? 'Creating account...' : 'Register'}
-          </button>
-        </form>
-
-        <p className="auth-footer">
-          Already have an account? <Link to="/login">Sign in</Link>
-        </p>
+          <Link to="/login" className="btn-secondary btn-large">
+            Sign In
+          </Link>
+        </div>
       </div>
     </div>
   );
