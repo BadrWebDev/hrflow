@@ -236,20 +236,33 @@ const AdminDashboard = () => {
       <div className="dashboard-container">
         <div className="dashboard-content">
           <div className="dashboard-header">
-            <h2>Admin Dashboard</h2>
+            <div className="dashboard-header-content">
+              <h2>Admin Dashboard</h2>
+              <p>Manage all system operations and employee data</p>
+            </div>
             <div className="header-actions">
               <ExportPanel />
               <button 
                 className="btn-primary"
                 onClick={() => navigate('/role-management')}
               >
-                🔐 Roles
+                🔐 Manage Roles
               </button>
             </div>
           </div>
 
-          {error && <div className="error-message">{error}</div>}
-          {success && <div className="success-message">{success}</div>}
+          {error && (
+            <div className="error-message">
+              <span className="error-icon">⚠️</span>
+              <span>{error}</span>
+            </div>
+          )}
+          {success && (
+            <div className="success-message">
+              <span className="success-icon">✓</span>
+              <span>{success}</span>
+            </div>
+          )}
 
           <div className="stats-grid">
             <div className="stat-card">
@@ -271,30 +284,30 @@ const AdminDashboard = () => {
           </div>
 
           <div className="card">
-            <div className="admin-tabs">
+            <div className="tabs">
               <button
                 className={`tab ${activeTab === 'leaves' ? 'active' : ''}`}
                 onClick={() => setActiveTab('leaves')}
               >
-                Leave Requests
+                📋 Leave Requests
               </button>
               <button
                 className={`tab ${activeTab === 'users' ? 'active' : ''}`}
                 onClick={() => setActiveTab('users')}
               >
-                Employees
+                👥 Employees
               </button>
               <button
                 className={`tab ${activeTab === 'departments' ? 'active' : ''}`}
                 onClick={() => setActiveTab('departments')}
               >
-                Departments
+                🏢 Departments
               </button>
               <button
                 className={`tab ${activeTab === 'leaveTypes' ? 'active' : ''}`}
                 onClick={() => setActiveTab('leaveTypes')}
               >
-                Leave Types
+                📝 Leave Types
               </button>
             </div>
 

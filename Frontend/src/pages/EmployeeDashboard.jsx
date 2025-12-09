@@ -250,8 +250,10 @@ const EmployeeDashboard = () => {
       <div className="dashboard-container">
         <div className="dashboard-content">
           <div className="dashboard-header">
-            <h2>My Dashboard</h2>
-            <p>Manage your leave requests</p>
+            <div className="dashboard-header-content">
+              <h2>My Dashboard</h2>
+              <p>Manage your leave requests and view your information</p>
+            </div>
           </div>
 
           {/* Tab Navigation */}
@@ -261,7 +263,7 @@ const EmployeeDashboard = () => {
                 className={`tab ${activeTab === 'leaves' ? 'active' : ''}`}
                 onClick={() => setActiveTab('leaves')}
               >
-                My Leaves
+                📋 My Leaves
               </button>
             )}
             {hasPermission('view users') && (
@@ -269,7 +271,7 @@ const EmployeeDashboard = () => {
                 className={`tab ${activeTab === 'users' ? 'active' : ''}`}
                 onClick={() => setActiveTab('users')}
               >
-                Users
+                👥 Users
               </button>
             )}
             {hasPermission('view departments') && (
@@ -277,7 +279,7 @@ const EmployeeDashboard = () => {
                 className={`tab ${activeTab === 'departments' ? 'active' : ''}`}
                 onClick={() => setActiveTab('departments')}
               >
-                Departments
+                🏢 Departments
               </button>
             )}
             {hasPermission('view leave types') && (
@@ -285,13 +287,23 @@ const EmployeeDashboard = () => {
                 className={`tab ${activeTab === 'leaveTypes' ? 'active' : ''}`}
                 onClick={() => setActiveTab('leaveTypes')}
               >
-                Leave Types
+                📝 Leave Types
               </button>
             )}
           </div>
 
-          {error && <div className="error-message">{error}</div>}
-          {success && <div className="success-message">{success}</div>}
+          {error && (
+            <div className="error-message">
+              <span className="error-icon">⚠️</span>
+              <span>{error}</span>
+            </div>
+          )}
+          {success && (
+            <div className="success-message">
+              <span className="success-icon">✓</span>
+              <span>{success}</span>
+            </div>
+          )}
 
           {/* Leaves Tab */}
           {activeTab === 'leaves' && (
