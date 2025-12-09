@@ -8,12 +8,17 @@ php artisan config:cache
 php artisan route:cache
 php artisan view:cache
 
-# Update nginx to use Railway's PORT (default 8080)
+# Get PORT from Railway (they provide this)
 PORT=${PORT:-8080}
 echo "Using PORT: $PORT"
 
-# Update nginx configuration in conf.d
+# Update nginx configuration - replace BOTH listen directives
 sed -i "s/listen 8080/listen $PORT/g" /etc/nginx/conf.d/default.conf
+sed -i "s/listen \[::]:8080/listen [::]:$PORT/g" /etc/nginx/conf.d/default.conf
+
+# Show the updated config for debugging
+echo "Nginx config after PORT substitution:"
+grep "listen" /etc/nginx/conf.d/default.conf
 
 # Test nginx configuration
 nginx -t
