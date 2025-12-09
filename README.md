@@ -1,385 +1,468 @@
-# 🚀 HRFlow - HR & Leave Management System
+# HRFlow - Human Resources Management System
 
-> A modern, full-stack web application for managing employee leave requests with role-based access control and real-time approval workflows.
+<p align="center">
+  <img src="https://img.shields.io/badge/Laravel-11.x-FF2D20?style=for-the-badge&logo=laravel&logoColor=white" alt="Laravel">
+  <img src="https://img.shields.io/badge/React-19.0-61DAFB?style=for-the-badge&logo=react&logoColor=black" alt="React">
+  <img src="https://img.shields.io/badge/PHP-8.2-777BB4?style=for-the-badge&logo=php&logoColor=white" alt="PHP">
+  <img src="https://img.shields.io/badge/MySQL-8.0-4479A1?style=for-the-badge&logo=mysql&logoColor=white" alt="MySQL">
+</p>
 
-[![Laravel](https://img.shields.io/badge/Laravel-11.x-red?logo=laravel)](https://laravel.com)
-[![React](https://img.shields.io/badge/React-19.x-blue?logo=react)](https://reactjs.org)
-[![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
+## 📋 Table of Contents
+- [Overview](#overview)
+- [Features](#features)
+- [Technologies](#technologies)
+- [Architecture](#architecture)
+- [Installation](#installation)
+- [Usage](#usage)
+- [API Documentation](#api-documentation)
+- [Development Journey](#development-journey)
+- [License](#license)
 
----
+## 🎯 Overview
 
-## 📸 Screenshots
+**HRFlow** is a comprehensive Human Resources Management System designed to streamline employee management, leave requests, department organization, and role-based access control. Built with modern web technologies, it provides a seamless experience for both administrators and employees.
 
-### Employee Dashboard
-![Employee Dashboard](screenshots/employee-dashboard.png)
-*Submit and track leave requests with real-time status updates*
+### What Does HRFlow Do?
 
-### Admin Dashboard
-![Admin Dashboard](screenshots/admin-dashboard.png)
-*Approve/reject requests and manage employees from a centralized interface*
-
-### Login Screen
-![Login Screen](screenshots/login.png)
-*Secure authentication with demo credentials for testing*
-
----
+- **Employee Management**: Create, update, and manage employee profiles with department assignments
+- **Leave Management**: Submit, approve, and track leave requests with different leave types
+- **Department Organization**: Manage departments with hierarchical structure and department managers
+- **Role-Based Access Control (RBAC)**: Flexible permission system with custom roles and granular permissions
+- **Real-Time Notifications**: Get instant updates on leave approvals, rejections, and system events
+- **Reporting & Analytics**: Export data and generate reports for HR insights
+- **Bulk Operations**: Perform bulk actions on multiple leave requests or users
 
 ## ✨ Features
 
-### 👤 For Employees
-- 📝 Submit leave requests with date range selection
-- 📊 View personal leave history and statistics
-- 🔔 Real-time notifications for request status updates
-- 📧 Email notifications for approved/rejected requests
-- ❌ Cancel pending requests
-- 📈 Dashboard with visual statistics
+### For Employees
+- ✅ Submit leave requests with date ranges and reasons
+- ✅ View personal leave history and status
+- ✅ Receive real-time notifications
+- ✅ Update personal profile information
+- ✅ View department information
 
-### 👨‍💼 For Administrators
-- ✅ Approve or reject leave requests
-- 👥 Manage employees (view, create, delete)
-- 🏢 Manage departments and leave types
-- 📊 View company-wide leave statistics
-- 🔔 Instant notifications when employees submit requests
-- 📧 Email alerts for all leave activities
-- 🔍 Filter and search functionality
+### For Administrators
+- ✅ Approve/reject leave requests with comments
+- ✅ Manage employees (create, edit, delete)
+- ✅ Organize departments and assign managers
+- ✅ Create and manage leave types with quotas
+- ✅ Configure custom roles with granular permissions
+- ✅ Bulk approve/reject leave requests
+- ✅ Export data (Excel, CSV, PDF)
+- ✅ View comprehensive dashboard analytics
 
-### 🔐 Security
-- JWT-based authentication with Laravel Sanctum
-- Role-based access control (RBAC)
-- Protected API routes with middleware
-- Automatic token refresh
-- Secure password hashing
+### Advanced Features
+- 🔐 **Smart Permission System**: Auto-grant dependent permissions (e.g., "create user" automatically grants "view users", "view departments", "view roles")
+- 🎨 **Modern UI/UX**: Glassmorphic design with smooth animations and micro-interactions
+- 📱 **Responsive Design**: Works seamlessly on desktop, tablet, and mobile
+- 🔔 **Real-Time Updates**: Live notification system with unread badges
+- 🌐 **RESTful API**: Clean API architecture for easy integration
 
----
+## 🛠 Technologies
 
-## 🛠️ Tech Stack
+### Backend Stack
 
-### Backend
-- **Framework:** Laravel 11
-- **Database:** MySQL
-- **Authentication:** Laravel Sanctum (Token-based)
-- **API:** RESTful architecture
-- **Email:** Laravel Mail with SMTP
-- **Notifications:** In-app + Email alerts
+#### Core Framework
+- **Laravel 11.x** - PHP web application framework
+  - Eloquent ORM for database interactions
+  - Artisan CLI for task automation
+  - Built-in authentication scaffolding
+  - RESTful API routing
 
-### Frontend
-- **Library:** React 19
-- **Routing:** React Router v6
-- **HTTP Client:** Axios
-- **State Management:** Context API
-- **Build Tool:** Vite
-- **Styling:** Custom CSS
+#### Authentication & Authorization
+- **Laravel Sanctum** - API token authentication
+  - Stateless authentication for SPA
+  - Token management with personal access tokens
+  - CORS configuration for cross-origin requests
+  
+- **Spatie Laravel Permission** - Role and permission management
+  - Guard-based permissions (web guard)
+  - Many-to-many relationship between users, roles, and permissions
+  - Permission checking with `hasPermissionTo()` and `hasRole()`
+  - Model traits: `HasRoles`, `HasPermissions`
+  - Automatic dependency resolution for permissions
 
----
+#### Database
+- **MySQL 8.0** - Relational database
+  - InnoDB storage engine
+  - Foreign key constraints
+  - Full-text search capabilities
+  
+#### Key Laravel Packages
+- `laravel/sanctum` - API authentication
+- `spatie/laravel-permission` - RBAC system
+- `laravel/tinker` - Interactive REPL for debugging
 
-## 📋 Prerequisites
+### Frontend Stack
 
-Before running this project, make sure you have:
+#### Core Framework
+- **React 19.0** - JavaScript library for building user interfaces
+  - Functional components with Hooks (useState, useEffect, useContext)
+  - Context API for state management
+  - React Router DOM for navigation
+  
+#### Build Tools
+- **Vite 7.2** - Next-generation frontend tooling
+  - Lightning-fast HMR (Hot Module Replacement)
+  - Optimized production builds
+  - ES modules support
+  
+#### HTTP Client
+- **Axios** - Promise-based HTTP client
+  - Interceptors for request/response handling
+  - Automatic token injection
+  - Error handling middleware
 
-- PHP >= 8.2
-- Composer
-- Node.js >= 18.x
-- MySQL/MariaDB
-- npm or yarn
+#### Styling
+- **Custom CSS** with modern features
+  - CSS Custom Properties (CSS variables) for theming
+  - CSS Grid & Flexbox layouts
+  - Keyframe animations
+  - Backdrop filters (glassmorphism effect)
+  - Smooth transitions & transforms
 
----
+### Design System
 
-## 🚀 Installation
+#### Color Palette
+- Primary: `#6366f1` (Indigo) - Main brand color
+- Success: `#10b981` (Emerald) - Positive actions
+- Warning: `#f59e0b` (Amber) - Alerts
+- Danger: `#ef4444` (Red) - Destructive actions
+- Neutrals: Gray scale from 50 to 900
 
-### 1. Clone the Repository
-```bash
-git clone https://github.com/yourusername/hrflow.git
-cd hrflow
+#### Typography
+- System font stack for optimal readability
+- Size scale: 0.75rem to 2rem
+- Font weights: 400, 500, 600, 700
+
+#### Spacing System
+- Scale: xs (0.5rem) to 2xl (2rem)
+- Consistent padding and margin values
+
+#### UI Components
+- **Buttons**: Primary, secondary, success, danger variants
+- **Cards**: Elevated surfaces with shadow and border
+- **Badges**: Status indicators with color coding
+- **Modals**: Overlay dialogs with backdrop blur
+- **Forms**: Input fields, select dropdowns, checkboxes
+- **Tables**: Sortable, hoverable rows
+
+#### Animations
+- `fadeIn`, `slideUp`, `slideDown` - Entry animations
+- `gradientShift` - Background animation (15s)
+- `pulse`, `spin` - Loading indicators
+- `shakeError` - Error feedback
+
+## 🏗 Architecture
+
+### Backend Architecture (MVC Pattern)
+
+```
+app/
+├── Http/
+│   ├── Controllers/
+│   │   ├── Auth/              # Authentication
+│   │   ├── LeaveController    # Leave CRUD operations
+│   │   ├── UserController     # User management
+│   │   ├── DepartmentController
+│   │   ├── LeaveTypeController
+│   │   ├── RoleController     # RBAC management
+│   │   └── NotificationController
+│   ├── Middleware/
+│   │   └── IsAdmin.php        # Admin route protection
+│   └── Requests/              # Form validation
+├── Models/
+│   ├── User.php              # HasRoles, HasPermissions
+│   ├── Leave.php
+│   ├── Department.php
+│   └── LeaveType.php
+└── Providers/
 ```
 
-### 2. Backend Setup
+### Frontend Architecture
+
+```
+src/
+├── components/
+│   ├── Navbar.jsx            # Top navigation
+│   ├── ExportPanel.jsx       # Data export dropdown
+│   └── ProtectedRoute.jsx    # Auth guard
+├── pages/
+│   ├── Login.jsx             # Authentication
+│   ├── Register.jsx
+│   ├── EmployeeDashboard.jsx # Employee view
+│   ├── AdminDashboard.jsx    # Admin view
+│   └── RoleManagement.jsx    # RBAC management
+├── context/
+│   └── AuthContext.jsx       # Global auth state
+├── services/
+│   ├── api.js                # Axios instance
+│   ├── authService.js        # Auth API calls
+│   ├── leaveService.js
+│   ├── roleService.js
+│   └── bulkService.js
+└── styles/
+    ├── index.css             # Global + variables
+    ├── components.css        # Reusable components
+    └── Dashboard.css
+```
+
+### Database Schema
+
+**Core Tables:**
+- `users` - Employee information
+- `departments` - Department structure
+- `leaves` - Leave requests
+- `leave_types` - Leave type definitions
+- `notifications` - System notifications
+
+**Spatie Permission Tables:**
+- `roles` - Role definitions
+- `permissions` - Permission definitions
+- `model_has_roles` - User-role assignments
+- `role_has_permissions` - Role-permission assignments
+
+### Authentication Flow
+
+1. User submits credentials → Backend validates
+2. Sanctum token generated and returned
+3. Token stored in `localStorage`
+4. Axios interceptor injects token in all requests
+5. Backend validates token on protected routes
+6. User data fetched and stored in Context
+
+### Permission System Flow
+
+1. Admin creates role with permissions
+2. Backend auto-adds dependent permissions
+3. User assigned to role
+4. Controllers check `hasPermissionTo()`
+5. Frontend guards UI based on permissions
+
+## 📦 Installation
+
+### Prerequisites
+- PHP >= 8.2
+- Composer >= 2.0
+- Node.js >= 18.0
+- MySQL >= 8.0
+
+### Backend Setup
 
 ```bash
-# Navigate to backend folder
+# Navigate to backend
 cd Backend
 
-# Install PHP dependencies
+# Install dependencies
 composer install
 
-# Copy environment file
+# Configure environment
 cp .env.example .env
-
-# Generate application key
 php artisan key:generate
 
-# Configure database in .env file
-DB_CONNECTION=mysql
-DB_HOST=127.0.0.1
-DB_PORT=3306
+# Update .env with database credentials
 DB_DATABASE=hrflow
 DB_USERNAME=root
 DB_PASSWORD=your_password
 
-# Run migrations and seed database
+# Run migrations with seeders
 php artisan migrate:fresh --seed
 
-# Start Laravel server
+# Start server
 php artisan serve
 ```
 
-Backend will run on: `http://localhost:8000`
+**Default Credentials:**
+- Admin: `admin@hrflow.test` / `Admin1234`
+- Employee: `john@hrflow.test` / `password`
 
-### 3. Frontend Setup
+### Frontend Setup
 
 ```bash
-# Navigate to frontend folder (from root)
+# Navigate to frontend
 cd Frontend
 
-# Install npm dependencies
+# Install dependencies
 npm install
 
 # Start development server
 npm run dev
 ```
 
-Frontend will run on: `http://localhost:5173` or `http://localhost:5174`
+Frontend runs on `http://localhost:5173`
 
----
+## 📚 Usage
 
-## 🔑 Demo Credentials
+### Creating a Custom Role
 
-### Admin Account
-```
-Email: admin@hrflow.test
-Password: Admin1234
-```
-**Permissions:** Full access to approve/reject leaves, manage users, departments, and settings
+1. Login as admin
+2. Click "🔐 Manage Roles"
+3. Click "+ Create Role"
+4. Enter role name
+5. Select permissions (dependencies auto-checked)
+6. Click "Create Role"
 
-### Employee Account
-```
-Email: john@hrflow.test
-Password: password
-```
-**Permissions:** Submit leave requests, view personal history
+### Assigning Roles to Users
 
-### Additional Employee
-```
-Email: jane@hrflow.test
-Password: password
-```
+1. Navigate to "Users" tab
+2. Click "Assign Role" on user row
+3. Select role from dropdown
+4. Click "Assign Role"
 
----
+### Managing Leave Requests
 
-## 📁 Project Structure
+**Employee:**
+1. Click "Request Leave"
+2. Select leave type and dates
+3. Enter reason
+4. Submit request
 
-```
-HRFlow/
-├── Backend/                 # Laravel API
-│   ├── app/
-│   │   ├── Http/
-│   │   │   ├── Controllers/    # API Controllers
-│   │   │   └── Middleware/     # Custom Middleware (IsAdmin)
-│   │   └── Models/             # Eloquent Models
-│   ├── database/
-│   │   ├── migrations/         # Database Schema
-│   │   └── seeders/            # Sample Data
-│   └── routes/
-│       └── api.php             # API Routes
-│
-└── Frontend/                # React Application
-    └── src/
-        ├── components/         # Reusable Components
-        ├── context/            # Auth Context (Global State)
-        ├── pages/              # Page Components
-        ├── services/           # API Service Layer
-        └── App.jsx             # Main Application Router
-```
+**Admin:**
+1. View pending requests in dashboard
+2. Click "Approve" or "Reject"
+3. Employee receives notification
 
----
-
-## 🔌 API Endpoints
+## 🔌 API Documentation
 
 ### Authentication
+
 ```http
-POST   /api/register          # Create new account
-POST   /api/login             # User login
-POST   /api/logout            # User logout
-GET    /api/me                # Get current user
+POST /api/login
+Content-Type: application/json
+
+{
+  "email": "admin@hrflow.test",
+  "password": "Admin1234"
+}
+
+Response:
+{
+  "token": "1|abc123...",
+  "user": {...}
+}
 ```
 
-### Leaves (Authenticated)
+### Leave Management
+
 ```http
-GET    /api/leaves            # List leaves (all for admin, own for employee)
-POST   /api/leaves            # Create leave request
-GET    /api/leaves/{id}       # View specific leave
-PUT    /api/leaves/{id}       # Update leave status (admin only)
-DELETE /api/leaves/{id}       # Cancel leave request
+GET /api/leaves
+Authorization: Bearer {token}
+
+Response:
+[
+  {
+    "id": 1,
+    "user_id": 2,
+    "leave_type_id": 1,
+    "start_date": "2025-12-20",
+    "end_date": "2025-12-22",
+    "status": "pending",
+    "user": {...},
+    "leaveType": {...}
+  }
+]
 ```
 
-### Notifications (Authenticated)
+### Role Management
+
 ```http
-GET    /api/notifications              # Get all notifications
-GET    /api/notifications/unread-count # Get unread count
-POST   /api/notifications/{id}/read    # Mark notification as read
-POST   /api/notifications/mark-all-read # Mark all as read
+POST /api/roles
+Authorization: Bearer {token}
+Content-Type: application/json
+
+{
+  "name": "hr_manager",
+  "permissions": ["create user", "approve leave"]
+}
+
+Response:
+{
+  "id": 4,
+  "name": "hr_manager",
+  "permissions": [
+    {"name": "create user"},
+    {"name": "view users"},      // Auto-added
+    {"name": "view departments"}, // Auto-added
+    {"name": "view roles"},       // Auto-added
+    {"name": "approve leave"}
+  ]
+}
 ```
 
-### Admin Only Routes
-```http
-GET    /api/users             # List all employees
-POST   /api/users             # Create employee
-DELETE /api/users/{id}        # Delete employee
+## 🛣 Development Journey
 
-GET    /api/departments       # List departments
-POST   /api/departments       # Create department
-PUT    /api/departments/{id}  # Update department
-DELETE /api/departments/{id}  # Delete department
+### Phase 1: Foundation
+- Set up Laravel backend with Sanctum authentication
+- Created React frontend with Vite
+- Designed database schema and migrations
+- Implemented basic CRUD operations
 
-GET    /api/leave-types       # List leave types
-POST   /api/leave-types       # Create leave type
-PUT    /api/leave-types/{id}  # Update leave type
-DELETE /api/leave-types/{id}  # Delete leave type
-```
+### Phase 2: Authentication & Authorization
+- Integrated Laravel Sanctum for API tokens
+- Installed Spatie Permission package
+- Created roles and permissions seeder
+- **Fixed**: Guard mismatch (changed from `sanctum` to `web`)
+- **Fixed**: Role assignment not working (added `assignRole()` call)
 
----
+### Phase 3: Core Features
+- Built leave request system
+- Implemented approval workflow
+- Created department management
+- Added leave type configuration
 
-## 🧪 Testing
+### Phase 4: RBAC System
+- Developed role management UI
+- Implemented permission dependencies
+- **Fixed**: Admin middleware blocking non-admin users with permissions
+- **Fixed**: Hardcoded role validation (changed to dynamic)
+- Added smart permission toggling in frontend
 
-### Test API Endpoints
-```bash
-# Login and get token
-curl -X POST http://localhost:8000/api/login \
-  -H "Content-Type: application/json" \
-  -d '{"email":"admin@hrflow.test","password":"Admin1234"}'
+### Phase 5: UI/UX Enhancement
+- Created comprehensive CSS variable system
+- Built component library
+- Implemented glassmorphic design
+- Added animations and micro-interactions
+- **Fixed**: Dashboard stats showing 0 on initial load
 
-# Use token for authenticated requests
-curl -X GET http://localhost:8000/api/leaves \
-  -H "Authorization: Bearer YOUR_TOKEN_HERE"
-```
+### Phase 6: Advanced Features
+- Added notification system
+- Implemented export functionality
+- Created bulk operations
+- Added real-time updates
 
----
+### Key Challenges Solved
 
-## 🎯 Key Features Implementation
+**Challenge 1: Guard Mismatch**
+- **Problem**: Roles used `sanctum` guard, users used `web`
+- **Solution**: Standardized to `web` guard throughout
+- **Impact**: Permission checks started working
 
-### 1. Authentication Flow
-- User logs in → Backend validates → Returns JWT token
-- Token stored in localStorage
-- Axios interceptor adds token to all requests
-- Auto-redirect on 401 Unauthorized
+**Challenge 2: Permission Access**
+- **Problem**: Non-admins couldn't access role endpoints
+- **Solution**: Moved routes outside admin middleware
+- **Impact**: Permission-based access implemented correctly
 
-### 2. Role-Based Access Control
-```php
-// Middleware protects admin routes
-Route::middleware(['auth:sanctum', 'admin'])->group(function () {
-    Route::post('/departments', [DepartmentController::class, 'store']);
-});
-```
+**Challenge 3: Dynamic Roles**
+- **Problem**: User creation only accepted 'employee' or 'admin'
+- **Solution**: Changed validation to `exists:roles,name`
+- **Impact**: Custom roles can be assigned
 
-### 3. Notification System
-- **In-App Notifications:** Real-time bell icon with unread count
-- **Email Notifications:** Beautiful HTML emails sent automatically
-- **Triggers:** Leave submitted, approved, rejected, cancelled
-- **Smart Routing:** Admins notified on submissions, employees on status changes
+**Challenge 4: Permission Dependencies**
+- **Problem**: Users had incomplete permission sets
+- **Solution**: Auto-dependency system in backend + frontend
+- **Impact**: Valid permission combinations guaranteed
 
-### 4. Real-Time Updates
-- Optimistic UI updates
-- Instant feedback on actions
-- Auto-refresh after mutations
+## 📄 License
 
-### 5. Responsive Design
-- Mobile-friendly interface
-- Adaptive grid layouts
-- Touch-optimized controls
-
----
-
-## 🌟 What Makes This Project Stand Out
-
-1. **Enterprise Architecture:** Clean separation of concerns, scalable structure
-2. **Security First:** Token authentication, middleware protection, input validation
-3. **Modern Stack:** Latest versions of Laravel and React
-4. **Best Practices:** DRY principle, reusable components, service layer pattern
-5. **User Experience:** Intuitive UI, loading states, error handling
-6. **Code Quality:** Well-commented, organized, maintainable
-
----
-
-## 📚 What I Learned
-
-### Backend Development
-- RESTful API design principles
-- Laravel Sanctum authentication
-- Eloquent ORM and relationships
-- Middleware for authorization
-- Database migrations and seeding
-- API resource controllers
-
-### Frontend Development
-- React Hooks (useState, useEffect, useContext)
-- React Router v6 navigation
-- Axios interceptors and error handling
-- Context API for state management
-- Protected routes implementation
-- Form handling and validation
-
-### Full-Stack Integration
-- Token-based authentication flow
-- API integration patterns
-- Error handling strategies
-- CORS configuration
-- Development workflow
-
----
-
-## 🚀 Future Enhancements
-
-- [ ] **Leave Balance System** - Track remaining days per leave type
-- [ ] **Email Notifications** - Notify on approval/rejection
-- [ ] **Calendar View** - Visual leave calendar
-- [ ] **File Uploads** - Attach documents to requests
-- [ ] **Reports & Analytics** - Dashboard with charts
-- [ ] **Mobile App** - React Native version
-- [ ] **Dark Mode** - Theme switching
-- [ ] **Export to PDF/Excel** - Leave reports
-
----
-
-## 🤝 Contributing
-
-Contributions are welcome! Please feel free to submit a Pull Request.
-
-1. Fork the project
-2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
-
----
-
-## 📝 License
-
-This project is open source and available under the [MIT License](LICENSE).
-
----
-
-## 👤 Author
-
-**Your Name**
-- GitHub: [@yourusername](https://github.com/yourusername)
-- LinkedIn: [Your LinkedIn](https://linkedin.com/in/yourprofile)
-- Portfolio: [yourwebsite.com](https://yourwebsite.com)
-
----
+This project is open-sourced under the MIT License.
 
 ## 🙏 Acknowledgments
 
-- Laravel Community for excellent documentation
-- React Team for the amazing library
-- All contributors and testers
+- Laravel community for excellent documentation
+- React team for React 19 features
+- Spatie for the Permission package
+- Vite team for amazing build tool
 
 ---
 
-## 📧 Contact
-
-For questions or feedback, please reach out:
-- Email: your.email@example.com
-- Project Link: [https://github.com/yourusername/hrflow](https://github.com/yourusername/hrflow)
-
----
-
-**⭐ If you found this project helpful, please give it a star!**
+<p align="center">Made with ❤️ using Laravel & React</p>
