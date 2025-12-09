@@ -56,7 +56,10 @@ class UserController extends Controller
             'department_id' => $request->department_id,
         ]);
 
-        return response()->json($newUser->load('department'), 201);
+        // Assign Spatie role for permissions
+        $newUser->assignRole($request->role);
+
+        return response()->json($newUser->load(['department', 'roles']), 201);
     }
 
     /**
@@ -137,7 +140,12 @@ class UserController extends Controller
 
         $targetUser->update($updateData);
 
-        return response()->json($targetUser->load('department'));
+        // Sync Spatie role if role was updated
+        if (isset($updateData['role'])) {
+            $targetUser->syncRoles([$updateData['role']]);
+        }
+
+        return response()->json($targetUser->load(['department', 'roles']));
     }
 
     /**

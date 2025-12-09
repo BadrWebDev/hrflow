@@ -59,7 +59,7 @@ class RolesAndPermissionsSeeder extends Seeder
 
         foreach ($permissions as $permission) {
             Permission::firstOrCreate(
-                ['name' => $permission, 'guard_name' => 'sanctum']
+                ['name' => $permission, 'guard_name' => 'web']
             );
         }
 
@@ -67,7 +67,7 @@ class RolesAndPermissionsSeeder extends Seeder
         
         // Admin role - all permissions
         $admin = Role::firstOrCreate(
-            ['name' => 'admin', 'guard_name' => 'sanctum']
+            ['name' => 'admin', 'guard_name' => 'web']
         );
         if ($admin->permissions->isEmpty()) {
             $admin->givePermissionTo(Permission::all());
@@ -75,7 +75,7 @@ class RolesAndPermissionsSeeder extends Seeder
 
         // Department Manager role - limited permissions
         $manager = Role::firstOrCreate(
-            ['name' => 'department_manager', 'guard_name' => 'sanctum']
+            ['name' => 'department_manager', 'guard_name' => 'web']
         );
         if ($manager->permissions->isEmpty()) {
             $manager->givePermissionTo([
@@ -92,7 +92,7 @@ class RolesAndPermissionsSeeder extends Seeder
         // Employee role - basic permissions
         $employee = Role::firstOrCreate([
             'name' => 'employee',
-            'guard_name' => 'sanctum'
+            'guard_name' => 'web'
         ]);
         if ($employee->permissions->isEmpty()) {
             $employee->givePermissionTo([
