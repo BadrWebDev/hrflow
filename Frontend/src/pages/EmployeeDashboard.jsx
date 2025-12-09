@@ -529,18 +529,12 @@ const EmployeeDashboard = () => {
                         onChange={(e) => setUserFormData({ ...userFormData, role: e.target.value })}
                         required
                       >
-                        {availableRoles.length === 0 ? (
-                          <option value="">Loading roles...</option>
-                        ) : (
-                          <>
-                            <option value="">Select a role...</option>
-                            {availableRoles.map(role => (
-                              <option key={role.id} value={role.name}>
-                                {role.name.charAt(0).toUpperCase() + role.name.slice(1)}
-                              </option>
-                            ))}
-                          </>
-                        )}
+                        <option value="">Select a role...</option>
+                        {availableRoles.map(role => (
+                          <option key={role.id} value={role.name}>
+                            {role.name.charAt(0).toUpperCase() + role.name.slice(1)}
+                          </option>
+                        ))}
                       </select>
                     </div>
                   </div>
