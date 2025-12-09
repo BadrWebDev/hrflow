@@ -61,35 +61,56 @@ const RoleManagement = () => {
 
   const handlePermissionToggle = (permName) => {
     setFormData(prev => {
-      let newPermissions = prev.permissions.includes(permName)
+      const isCurrentlyChecked = prev.permissions.includes(permName);
+      let newPermissions = isCurrentlyChecked
         ? prev.permissions.filter(p => p !== permName)
         : [...prev.permissions, permName];
       
-      // Auto-add view permission when CRUD permissions are selected
-      const crudPermissions = {
-        'create leave': 'view leaves',
-        'edit leave': 'view leaves',
-        'delete leave': 'view leaves',
-        'approve leave': 'view leaves',
-        'reject leave': 'view leaves',
-        'create user': 'view users',
-        'edit user': 'view users',
-        'delete user': 'view users',
-        'create department': 'view departments',
-        'edit department': 'view departments',
-        'delete department': 'view departments',
-        'create leave type': 'view leave types',
-        'edit leave type': 'view leave types',
-        'delete leave type': 'view leave types',
-        'create role': 'view roles',
-        'edit role': 'view roles',
-        'delete role': 'view roles',
+      // Dependency map for auto-adding view permissions
+      const dependencyMap = {
+        'create leave': ['view leaves'],
+        'edit leave': ['view leaves'],
+        'delete leave': ['view leaves'],
+        'approve leave': ['view leaves'],
+        'reject leave': ['view leaves'],
+        'create user': ['view users', 'view departments', 'view roles'],
+        'edit user': ['view users', 'view departments', 'view roles'],
+        'delete user': ['view users'],
+        'create department': ['view departments'],
+        'edit department': ['view departments'],
+        'delete department': ['view departments'],
+        'create leave type': ['view leave types'],
+        'edit leave type': ['view leave types'],
+        'delete leave type': ['view leave types'],
+        'create role': ['view roles'],
+        'edit role': ['view roles'],
+        'delete role': ['view roles'],
+        'assign roles': ['view roles', 'view users'],
       };
       
-      // If adding a CRUD permission, also add its view permission
-      if (crudPermissions[permName] && !prev.permissions.includes(permName)) {
-        if (!newPermissions.includes(crudPermissions[permName])) {
-          newPermissions.push(crudPermissions[permName]);
+      // If checking a permission, add its dependencies
+      if (!isCurrentlyChecked && dependencyMap[permName]) {
+        dependencyMap[permName].forEach(dep => {
+          if (!newPermissions.includes(dep)) {
+            newPermissions.push(dep);
+          }
+        });
+      }
+      
+      // If unchecking a view permission, remove all permissions that depend on it
+      if (isCurrentlyChecked) {
+        const viewToActions = {
+          'view leaves': ['create leave', 'edit leave', 'delete leave', 'approve leave', 'reject leave'],
+          'view users': ['create user', 'edit user', 'delete user', 'assign roles'],
+          'view departments': ['create user', 'edit user', 'create department', 'edit department', 'delete department'],
+          'view roles': ['create user', 'edit user', 'create role', 'edit role', 'delete role', 'assign roles'],
+          'view leave types': ['create leave type', 'edit leave type', 'delete leave type'],
+        };
+        
+        if (viewToActions[permName]) {
+          viewToActions[permName].forEach(action => {
+            newPermissions = newPermissions.filter(p => p !== action);
+          });
         }
       }
       
