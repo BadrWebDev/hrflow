@@ -225,7 +225,7 @@ const EmployeeDashboard = () => {
       name: user.name,
       email: user.email,
       password: '',
-      role: user.role,
+      role: user.roles?.[0]?.name || user.role || '',
       department_id: user.department_id || '',
     });
     setShowUserForm(true);
@@ -529,12 +529,18 @@ const EmployeeDashboard = () => {
                         onChange={(e) => setUserFormData({ ...userFormData, role: e.target.value })}
                         required
                       >
-                        <option value="">Select a role...</option>
-                        {availableRoles.map(role => (
-                          <option key={role.id} value={role.name}>
-                            {role.name.charAt(0).toUpperCase() + role.name.slice(1)}
-                          </option>
-                        ))}
+                        {availableRoles.length === 0 ? (
+                          <option value="">Loading roles...</option>
+                        ) : (
+                          <>
+                            <option value="">Select a role...</option>
+                            {availableRoles.map(role => (
+                              <option key={role.id} value={role.name}>
+                                {role.name.charAt(0).toUpperCase() + role.name.slice(1)}
+                              </option>
+                            ))}
+                          </>
+                        )}
                       </select>
                     </div>
                   </div>
