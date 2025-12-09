@@ -55,7 +55,7 @@ const ExportPanel = () => {
   return (
     <div className="export-panel" ref={panelRef}>
       <button
-        className="btn-export"
+        className="btn btn-primary"
         onClick={() => setShowPanel(!showPanel)}
       >
         📊 Export & Reports

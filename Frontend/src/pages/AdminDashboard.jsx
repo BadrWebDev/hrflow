@@ -243,7 +243,7 @@ const AdminDashboard = () => {
             <div className="header-actions">
               <ExportPanel />
               <button 
-                className="btn-primary"
+                className="btn btn-primary"
                 onClick={() => navigate('/role-management')}
               >
                 🔐 Manage Roles

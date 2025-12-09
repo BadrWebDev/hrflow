@@ -220,10 +220,10 @@ const RoleManagement = () => {
               <p>Create and manage user roles and permissions</p>
             </div>
             <div className="header-actions">
-              <button className="btn-secondary" onClick={() => navigate('/dashboard')}>
+              <button className="btn btn-secondary" onClick={() => navigate('/dashboard')}>
                 ← Back
               </button>
-              <button className="btn-primary" onClick={() => handleOpenModal()}>
+              <button className="btn btn-primary" onClick={() => handleOpenModal()}>
                 + Create Role
               </button>
             </div>
