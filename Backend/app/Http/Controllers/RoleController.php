@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Auth;
 
 class RoleController extends Controller
 {
@@ -14,6 +15,12 @@ class RoleController extends Controller
      */
     public function index()
     {
+        $user = Auth::user();
+        
+        if (!$user->hasPermissionTo('view roles')) {
+            return response()->json(['error' => 'You do not have permission to view roles'], 403);
+        }
+
         $roles = Role::with('permissions')->get();
         return response()->json($roles);
     }
