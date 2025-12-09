@@ -34,13 +34,15 @@ Built on Laravel 11 and React 19, HRFlow implements industry best practices incl
 | **Leave Management** | Multi-type leave requests with approval workflows and quota tracking |
 | **Department Organization** | Hierarchical department structure with manager assignments |
 | **RBAC System** | Dynamic roles with 25+ granular permissions and auto-dependency resolution |
-| **Notifications** | Real-time system notifications for leave status and organizational updates |
+| **Email Notifications** | Automated email alerts for leave approvals, rejections, and status updates |
+| **In-App Notifications** | Real-time notification system with unread badges and notification center |
 | **Data Export** | Export capabilities for Excel, CSV, and PDF formats |
 | **Bulk Operations** | Batch processing for leave approvals and administrative tasks |
 
 ### Advanced Capabilities
 
 - **Smart Permission Dependencies**: Automatically grant prerequisite permissions (e.g., "create user" implies "view users", "view departments")
+- **Email Integration**: Automatic email notifications sent via Laravel Mail when leave requests are approved/rejected
 - **Glassmorphic UI**: Modern design system with 70+ CSS variables and smooth animations
 - **Responsive Design**: Mobile-first approach with cross-device compatibility
 - **RESTful API**: Clean, documented API architecture for seamless integrations
@@ -58,6 +60,7 @@ Built on Laravel 11 and React 19, HRFlow implements industry best practices incl
 Laravel 11.x Framework
 ├── Authentication: Laravel Sanctum (Stateless token-based)
 ├── Authorization: Spatie Laravel Permission (RBAC)
+├── Email: Laravel Mail with Mailtrap/SMTP
 ├── Database: MySQL 8.0+ (InnoDB Engine)
 ├── ORM: Eloquent
 └── API: RESTful Architecture
@@ -66,6 +69,7 @@ Laravel 11.x Framework
 **Key Components:**
 - **Laravel Sanctum**: Personal access tokens for SPA authentication, CORS configuration
 - **Spatie Permission**: Role-permission management with guard-based access control (`web` guard)
+- **Laravel Mail**: Email notifications for leave approvals, rejections, and system updates
 - **Eloquent ORM**: Database abstraction with relationship management
 - **Middleware**: Authentication, authorization, and CORS handling
 
@@ -247,6 +251,16 @@ DB_DATABASE=hrflow
 DB_USERNAME=root
 DB_PASSWORD=your_password
 
+# Configure email (optional - for notifications)
+MAIL_MAILER=smtp
+MAIL_HOST=sandbox.smtp.mailtrap.io
+MAIL_PORT=2525
+MAIL_USERNAME=your_mailtrap_username
+MAIL_PASSWORD=your_mailtrap_password
+MAIL_ENCRYPTION=tls
+MAIL_FROM_ADDRESS=noreply@hrflow.test
+MAIL_FROM_NAME="HRFlow System"
+
 # Run migrations and seed data
 php artisan migrate:fresh --seed
 
@@ -274,6 +288,29 @@ npm run dev
 ```
 
 **Application runs at**: `http://localhost:5173`
+
+### Email Configuration (Optional)
+
+HRFlow sends automated email notifications for:
+- Leave request submissions (to admins)
+- Leave approvals (to employees)
+- Leave rejections (to employees)
+- Leave cancellations (to admins)
+
+**Mailtrap (Development):**
+1. Sign up at [mailtrap.io](https://mailtrap.io)
+2. Copy SMTP credentials to `.env`
+3. Test emails will appear in Mailtrap inbox
+
+**Gmail/SMTP (Production):**
+```env
+MAIL_MAILER=smtp
+MAIL_HOST=smtp.gmail.com
+MAIL_PORT=587
+MAIL_USERNAME=your_email@gmail.com
+MAIL_PASSWORD=your_app_password
+MAIL_ENCRYPTION=tls
+```
 
 ### Production Build
 
