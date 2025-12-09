@@ -17,10 +17,9 @@ class RoleController extends Controller
     {
         $user = Auth::user();
         
-        // Temporarily disabled for debugging
-        // if (!$user->hasPermissionTo('view roles')) {
-        //     return response()->json(['error' => 'You do not have permission to view roles'], 403);
-        // }
+        if (!$user->hasPermissionTo('view roles')) {
+            return response()->json(['error' => 'You do not have permission to view roles'], 403);
+        }
 
         $roles = Role::with('permissions')->get();
         return response()->json($roles);

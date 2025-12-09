@@ -48,6 +48,14 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/notifications/{id}/read', [NotificationController::class, 'markAsRead']);
     Route::post('/notifications/mark-all-read', [NotificationController::class, 'markAllAsRead']);
 
+    // Role & Permission management (permission-based, not admin-only)
+    Route::get('/roles', [RoleController::class, 'index']);
+    Route::get('/permissions', [RoleController::class, 'permissions']);
+    Route::post('/roles', [RoleController::class, 'store']);
+    Route::put('/roles/{id}', [RoleController::class, 'update']);
+    Route::delete('/roles/{id}', [RoleController::class, 'destroy']);
+    Route::post('/users/{userId}/assign-role', [RoleController::class, 'assignRole']);
+
     // Admin-only routes
     Route::middleware('admin')->group(function () {
         // Leave management
@@ -62,14 +70,6 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/leave-types', [LeaveTypeController::class, 'store']);
         Route::put('/leave-types/{id}', [LeaveTypeController::class, 'update']);
         Route::delete('/leave-types/{id}', [LeaveTypeController::class, 'destroy']);
-
-        // Role & Permission management
-        Route::get('/roles', [RoleController::class, 'index']);
-        Route::get('/permissions', [RoleController::class, 'permissions']);
-        Route::post('/roles', [RoleController::class, 'store']);
-        Route::put('/roles/{id}', [RoleController::class, 'update']);
-        Route::delete('/roles/{id}', [RoleController::class, 'destroy']);
-        Route::post('/users/{userId}/assign-role', [RoleController::class, 'assignRole']);
 
         // Bulk operations
         Route::post('/bulk/approve-leaves', [BulkOperationController::class, 'bulkApproveLeaves']);
