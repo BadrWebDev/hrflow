@@ -51,6 +51,12 @@ sleep 2
 echo "PHP-FPM started successfully"
 echo "Application ready!"
 
+# Show any recent Laravel errors
+echo "Checking for Laravel errors..."
+if [ -f /var/www/storage/logs/laravel.log ]; then
+    tail -50 /var/www/storage/logs/laravel.log || true
+fi
+
 # Start Nginx in foreground
 echo "Starting Nginx..."
 nginx -g 'daemon off;'
