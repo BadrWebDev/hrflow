@@ -33,15 +33,11 @@ COPY --chown=www-data:www-data Backend/ /var/www
 # Install dependencies
 RUN composer install --no-dev --optimize-autoloader --no-interaction
 
-# Copy nginx configuration from root
-COPY nginx.conf /etc/nginx/sites-available/default
-
-# Enable the site and remove default
-RUN ln -sf /etc/nginx/sites-available/default /etc/nginx/sites-enabled/default \
-    && rm -f /etc/nginx/sites-enabled/default
-
-# Copy nginx config directly to conf.d
+# Copy nginx configuration
 COPY nginx.conf /etc/nginx/conf.d/default.conf
+
+# Remove default nginx config
+RUN rm -f /etc/nginx/sites-enabled/default
 
 # Set permissions
 RUN chown -R www-data:www-data /var/www \
