@@ -101,18 +101,5 @@ class RolesAndPermissionsSeeder extends Seeder
                 'delete leave', // own leaves only
             ]);
         }
-
-        // Assign roles to existing users
-        $adminUser = User::where('email', 'admin@hrflow.test')->first();
-        if ($adminUser && !$adminUser->hasRole('admin')) {
-            $adminUser->assignRole('admin');
-        }
-
-        $employees = User::where('role', 'employee')->get();
-        foreach ($employees as $emp) {
-            if (!$emp->hasRole('employee')) {
-                $emp->assignRole('employee');
-            }
-        }
     }
 }

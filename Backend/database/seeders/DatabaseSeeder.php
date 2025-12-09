@@ -18,6 +18,9 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
+        // First, create roles and permissions
+        $this->call(RolesAndPermissionsSeeder::class);
+
         // User::factory(10)->create();
 
         // Departments
@@ -38,23 +41,26 @@ class DatabaseSeeder extends Seeder
             'role'=>'admin',
             'department_id'=>$hr->id,
         ]);
+        $admin->assignRole('admin');
 
         // Sample employees
-        User::create([
+        $john = User::create([
             'name'=>'John Doe',
             'email'=>'john@hrflow.test',
             'password'=>Hash::make('password'),
             'role'=>'employee',
             'department_id'=>$it->id,
         ]);
+        $john->assignRole('employee');
 
-        User::create([
+        $jane = User::create([
             'name'=>'Jane Smith',
             'email'=>'jane@hrflow.test',
             'password'=>Hash::make('password'),
             'role'=>'employee',
             'department_id'=>$finance->id,
         ]);
+        $jane->assignRole('employee');
 
         // Set department managers
         $hr->update(['manager_id'=>$admin->id]);
