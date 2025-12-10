@@ -68,17 +68,17 @@ const EmployeeDashboard = () => {
         const leavesData = await leaveService.getLeaves();
         setLeaves(leavesData);
         
-        // Only fetch leave types if user has permission
+        // Fetch leave types if user can view them OR create leaves (needed for dropdown)
         if (hasPermission('view leave types') || hasPermission('create leave')) {
           try {
             const typesData = await leaveService.getLeaveTypes();
             setLeaveTypes(typesData);
           } catch (err) {
-            // Silently fail if user doesn't have permission to view leave types
+            // Silently fail if user doesn't have permission
             console.log('Cannot fetch leave types:', err.response?.data?.error);
           }
         }
-      } else if (activeTab === 'users' && hasPermission('view users')) {
+      } else if (activeTab === 'leaveTypes' && hasPermission('view leave types')) {
         const [usersData, deptsData] = await Promise.all([
           api.get('/users'),
           api.get('/departments'),
