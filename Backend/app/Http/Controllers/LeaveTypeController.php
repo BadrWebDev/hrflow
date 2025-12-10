@@ -16,7 +16,8 @@ class LeaveTypeController extends Controller
     {
         $user = Auth::user();
         
-        if (!$user->hasPermissionTo('view leave types')) {
+        // Allow viewing leave types if user can view them OR create leaves (needed for dropdown)
+        if (!$user->hasPermissionTo('view leave types') && !$user->hasPermissionTo('create leave')) {
             return response()->json(['error' => 'You do not have permission to view leave types'], 403);
         }
 
